@@ -1,0 +1,29 @@
+using System.ComponentModel.DataAnnotations;
+using api.Enums;
+using System.Text.Json.Serialization;
+
+namespace api.Models
+{
+    public class RegisterModel
+    {
+        [Required]
+        [MaxLength(250)]
+        public string lastname { get; set; }
+
+        [Required]
+        [MaxLength(250)]
+        public string firstname { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+		[Required]
+		[MinLength(8)]
+		[RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).+$", ErrorMessage = "Password must be at least 8 characters long and contain a mix of uppercase, lowercase, numeric, and special characters.")]
+		public string Password { get; set; }
+
+				[JsonConverter(typeof(JsonStringEnumConverter))]
+				public UserRole? Role { get; set; }
+    }
+}

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using api.Data;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace api.Controllers
 {
@@ -35,6 +36,7 @@ namespace api.Controllers
 
         // POST: api/skills
         [HttpPost]
+				[Authorize(Roles = "SUPER_ADMIN")]
         public async Task<ActionResult<Skill>> PostSkill(Skill skill)
         {
             _context.Skills.Add(skill);
@@ -44,6 +46,7 @@ namespace api.Controllers
 
         // PUT: api/skills/5
         [HttpPut("{id}")]
+				[Authorize(Roles = "SUPER_ADMIN")]
         public async Task<IActionResult> PutSkill(int id, Skill skill)
         {
             if (id != skill.Id)
@@ -66,6 +69,7 @@ namespace api.Controllers
 
         // DELETE: api/skills/5
         [HttpDelete("{id}")]
+				[Authorize(Roles = "SUPER_ADMIN")]
         public async Task<IActionResult> DeleteSkill(int id)
         {
             var skill = await _context.Skills.FindAsync(id);
