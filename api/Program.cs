@@ -80,6 +80,7 @@ app.MapControllers();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<TokenBlacklistMiddleware>();
 
 app.UseCors("AllowFrontend");
 

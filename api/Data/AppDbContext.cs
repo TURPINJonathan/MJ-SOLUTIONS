@@ -10,6 +10,7 @@ namespace api.Data
 
 		public DbSet<User> Users { get; set; }
 		public DbSet<RefreshToken> RefreshTokens { get; set; }
+		public DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
 		public DbSet<Skill> Skills { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
