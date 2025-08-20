@@ -85,6 +85,57 @@ namespace api.Migrations
                     b.ToTable("BlacklistedTokens");
                 });
 
+            modelBuilder.Entity("api.Models.FileResource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool?>("IsBanner")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool?>("IsLogo")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool?>("IsMaster")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OwnerType")
+                        .HasColumnType("longtext");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("SkillId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SkillId");
+
+                    b.ToTable("FileResources");
+                });
+
             modelBuilder.Entity("api.Models.Permission", b =>
                 {
                     b.Property<int>("Id")
@@ -300,6 +351,18 @@ namespace api.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("api.Models.FileResource", b =>
+                {
+                    b.HasOne("api.Models.Skill", null)
+                        .WithMany("Files")
+                        .HasForeignKey("SkillId");
+                });
+
+            modelBuilder.Entity("api.Models.Skill", b =>
+                {
+                    b.Navigation("Files");
                 });
 #pragma warning restore 612, 618
         }

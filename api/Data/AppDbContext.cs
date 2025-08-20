@@ -14,6 +14,7 @@ namespace api.Data
 		public DbSet<BlacklistedToken> BlacklistedTokens { get; set; }
 		public DbSet<AuditLog> AuditLogs { get; set; }
 		public DbSet<Skill> Skills { get; set; }
+		public DbSet<FileResource> FileResources { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

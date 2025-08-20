@@ -1,34 +1,41 @@
+using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using api.Enums;
-using System.Text.Json.Serialization;
+using api.Binders;
 
-namespace api.Models
+namespace api.DTOs
 {
-	public class Skill
+	public class SkillCreateDTO
 	{
-		[Key]
-		public int Id { get; set; }
 		[Required]
 		public string Name { get; set; }
+
 		[Required]
 		public string Description { get; set; }
+
 		[Required]
-		[RegularExpression(
-			"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
-			ErrorMessage = "Invalid skill type format."
-			)
-		]
 		public string Color { get; set; }
+
 		public bool IsFavorite { get; set; }
+
 		public bool IsHardSkill { get; set; }
 
-		// Specific properties for hard skills
-		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public SkillType? Type { get; set; }
+
 		[Range(0, 100)]
+		[Required]
 		public int? Proficiency { get; set; }
+
 		[Url]
 		public string? DocumentationUrl { get; set; }
-		public ICollection<FileResource> Files { get; set; }
+
+		[Required]
+		public List<IFormFile> Files { get; set; }
+
+		[ModelBinder(BinderType = typeof(JsonFormDataModelBinder))]
+		public List<FileResourceMeta> FilesMeta { get; set; }
 	}
+		
 }

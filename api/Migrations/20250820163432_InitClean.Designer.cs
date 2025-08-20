@@ -12,8 +12,8 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250819145925_AuditLogTable")]
-    partial class AuditLogTable
+    [Migration("20250820163432_InitClean")]
+    partial class InitClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,21 @@ namespace api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("PermissionUser", b =>
+                {
+                    b.Property<int>("PermissionsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PermissionsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("PermissionUser");
+                });
 
             modelBuilder.Entity("api.Models.AuditLog", b =>
                 {
@@ -71,6 +86,116 @@ namespace api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BlacklistedTokens");
+                });
+
+            modelBuilder.Entity("api.Models.FileResource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool?>("IsBanner")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool?>("IsLogo")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool?>("IsMaster")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OwnerType")
+                        .HasColumnType("longtext");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("SkillId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SkillId");
+
+                    b.ToTable("FileResources");
+                });
+
+            modelBuilder.Entity("api.Models.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "CREATE_USER"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "READ_USER"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "UPDATE_USER"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "DELETE_USER"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "CREATE_SKILL"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "READ_SKILL"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "UPDATE_SKILL"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "DELETE_SKILL"
+                        });
                 });
 
             modelBuilder.Entity("api.Models.RefreshToken", b =>
@@ -176,6 +301,9 @@ namespace api.Migrations
                         .HasColumnType("varchar(250)")
                         .HasDefaultValue("");
 
+                    b.Property<int>("JwtVersion")
+                        .HasColumnType("int");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -211,6 +339,33 @@ namespace api.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("PermissionUser", b =>
+                {
+                    b.HasOne("api.Models.Permission", null)
+                        .WithMany()
+                        .HasForeignKey("PermissionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("api.Models.FileResource", b =>
+                {
+                    b.HasOne("api.Models.Skill", null)
+                        .WithMany("Files")
+                        .HasForeignKey("SkillId");
+                });
+
+            modelBuilder.Entity("api.Models.Skill", b =>
+                {
+                    b.Navigation("Files");
                 });
 #pragma warning restore 612, 618
         }
