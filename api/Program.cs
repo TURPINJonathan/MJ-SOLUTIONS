@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var jwtKey = builder.Configuration.GetValue<string>("Jwt:Key");
@@ -34,6 +35,30 @@ builder.Services.AddSwaggerGen(options =>
 				Version = "1.0.0",
 				Description = "MJ SOLUTIONS API, your solution for all needs.",
 			});
+
+		options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+			{
+				In = ParameterLocation.Header,
+				Description = "JWT Authorization header using the Bearer scheme.",
+				Name = "Authorization",
+				Type = SecuritySchemeType.ApiKey
+			});
+		
+		options.AddSecurityRequirement(new OpenApiSecurityRequirement
+			{
+					{
+							new OpenApiSecurityScheme
+							{
+									Reference = new OpenApiReference
+									{
+											Type = ReferenceType.SecurityScheme,
+											Id = "Bearer"
+									}
+							},
+							new string[] {}
+					}
+			});
+
 	}
 );
 builder.Services.AddAuthentication(options =>
@@ -66,13 +91,18 @@ builder.Services.AddCors(options =>
     });
 });
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File("logs/log.txt")
+    .CreateLogger();
+builder.Host.UseSerilog();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -80,7 +110,9 @@ app.MapControllers();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseMiddleware<TokenBlacklistMiddleware>();
+app.UseMiddleware<JwtVersionMiddleware>();
 
 app.UseCors("AllowFrontend");
 

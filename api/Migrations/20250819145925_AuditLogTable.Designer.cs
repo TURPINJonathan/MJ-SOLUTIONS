@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api.Data;
 
@@ -11,9 +12,11 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250819145925_AuditLogTable")]
+    partial class AuditLogTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
-
-            modelBuilder.Entity("PermissionUser", b =>
-                {
-                    b.Property<int>("PermissionsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PermissionsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("PermissionUser");
-                });
 
             modelBuilder.Entity("api.Models.AuditLog", b =>
                 {
@@ -83,65 +71,6 @@ namespace api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BlacklistedTokens");
-                });
-
-            modelBuilder.Entity("api.Models.Permission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Permissions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "CREATE_USER"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "READ_USER"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "UPDATE_USER"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "DELETE_USER"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "CREATE_SKILL"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "READ_SKILL"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "UPDATE_SKILL"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "DELETE_SKILL"
-                        });
                 });
 
             modelBuilder.Entity("api.Models.RefreshToken", b =>
@@ -247,9 +176,6 @@ namespace api.Migrations
                         .HasColumnType("varchar(250)")
                         .HasDefaultValue("");
 
-                    b.Property<int>("JwtVersion")
-                        .HasColumnType("int");
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -285,21 +211,6 @@ namespace api.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("PermissionUser", b =>
-                {
-                    b.HasOne("api.Models.Permission", null)
-                        .WithMany()
-                        .HasForeignKey("PermissionsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("api.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

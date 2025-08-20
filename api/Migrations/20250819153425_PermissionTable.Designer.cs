@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api.Data;
 
@@ -11,9 +12,11 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250819153425_PermissionTable")]
+    partial class PermissionTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,49 +102,7 @@ namespace api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "CREATE_USER"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "READ_USER"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "UPDATE_USER"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "DELETE_USER"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "CREATE_SKILL"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "READ_SKILL"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "UPDATE_SKILL"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "DELETE_SKILL"
-                        });
+                    b.ToTable("Permission");
                 });
 
             modelBuilder.Entity("api.Models.RefreshToken", b =>
