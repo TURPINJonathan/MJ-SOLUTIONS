@@ -1,5 +1,6 @@
 using api.Data;
 using api.Models;
+using api.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -21,7 +22,13 @@ namespace api.Helpers
 			var user = GetConnectedUserWithPermissions(context, db);
 			return user != null && user.Permissions.Any(p => p.Name == permissionName);
 		}
-		
-	}
 
+		public static bool IsSuperAdmin(HttpContext context, AppDbContext db)
+		{
+			var user = GetConnectedUserWithPermissions(context, db);
+			return user?.Role == UserRole.SUPER_ADMIN;
+		}
+
+	}
+		
 }
