@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using api.Enums;
 using System.Text.Json.Serialization;
 
-namespace api.Models
+namespace api.DTOs
 {
-	public class RegisterModel
+	public class RegisterDTO
 	{
 		[Required]
 		[MaxLength(250)]

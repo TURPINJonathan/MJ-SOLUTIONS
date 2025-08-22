@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using api.Models;
 using api.Data;
 using api.Enums;
+using api.DTOs;
 using api.Helpers;
 using BCrypt.Net;
 using System.Security.Claims;
@@ -36,7 +37,7 @@ namespace api.Controllers
 
 		[HttpPost("register")]
 		[Authorize(Roles = "SUPER_ADMIN")]
-		public async Task<IActionResult> Register([FromBody] RegisterModel model)
+		public async Task<IActionResult> Register([FromBody] RegisterDTO model)
 		{
 			if (!UserHelper.HasPermission(HttpContext, _context, "CREATE_USER"))
 			{
@@ -106,7 +107,7 @@ namespace api.Controllers
 		}
 
 		[HttpPost("login")]
-		public IActionResult Login([FromBody] LoginModel login)
+		public IActionResult Login([FromBody] LoginDTO login)
 		{
 			_logger.LogInformation($"Tentative de connexion pour {login.Email} depuis l'ip {ConnectedUserIp}");
 
@@ -266,7 +267,7 @@ namespace api.Controllers
 
 		[HttpPatch("update")]
 		[Authorize]
-		public async Task<IActionResult> UpdateUser([FromBody] UpdateUserModel model)
+		public async Task<IActionResult> UpdateUser([FromBody] UpdateUserDTO model)
 		{
 			var user = _context.Users.Include(u => u.Permissions).FirstOrDefault(u => u.Id == model.UserId);
 			if (user == null)
