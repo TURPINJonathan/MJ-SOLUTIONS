@@ -77,7 +77,7 @@ namespace api.Controllers
 				firstname = model.firstname,
 				Email = model.Email,
 				PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
-				Role = model.Role ?? UserRole.USER,
+				Role = model.Role ?? UserRoleEnum.USER,
 				Permissions = new List<Permission>(),
 				CreatedAt = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris")),
 				UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris"))
@@ -122,7 +122,9 @@ namespace api.Controllers
 				return StatusCode(429, $"Trop de tentatives. Réessayez après {loginAttempts[ConnectedUserIp].blockedUntil.Value.ToLocalTime()}.");
 			}
 
-			var user = _context.Users.FirstOrDefault(u => u.Email == login.Email);
+			var user = _context.Users
+					.Include(u => u.Permissions)
+					.FirstOrDefault(u => u.Email == login.Email);
 
 			if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
 			{
@@ -147,12 +149,18 @@ namespace api.Controllers
 
 			loginAttempts[ConnectedUserIp] = (0, null);
 
-			var claims = new[]
+			var claims = new List<Claim>
 			{
-								new Claim(ClaimTypes.Name, user.Email),
-								new Claim(ClaimTypes.Role, user.Role?.ToString() ?? UserRole.USER.ToString()),
-								new Claim("JwtVersion", user.JwtVersion.ToString())
-						};
+					new Claim(ClaimTypes.Name, user.Email),
+					new Claim(ClaimTypes.Role, user.Role?.ToString() ?? UserRoleEnum.USER.ToString()),
+					new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+					new Claim("JwtVersion", user.JwtVersion.ToString())
+			};
+
+			foreach (var permission in user.Permissions)
+			{
+					claims.Add(new Claim("permissions", permission.Name));
+			}
 
 			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
 			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -223,7 +231,7 @@ namespace api.Controllers
 			var claims = new[]
 			{
 								new Claim(ClaimTypes.Name, user.Email),
-								new Claim(ClaimTypes.Role, user.Role?.ToString() ?? UserRole.USER.ToString())
+								new Claim(ClaimTypes.Role, user.Role?.ToString() ?? UserRoleEnum.USER.ToString())
 						};
 
 			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -279,7 +287,7 @@ namespace api.Controllers
 			}
 
 			var connectedUser = _context.Users.FirstOrDefault(u => u.Email == ConnectedUserEmail);
-			var isSuperAdmin = connectedUser?.Role == UserRole.SUPER_ADMIN;
+			var isSuperAdmin = connectedUser?.Role == UserRoleEnum.SUPER_ADMIN;
 			var isSelf = connectedUser?.Id == user.Id;
 
 			if (!isSuperAdmin && !isSelf)

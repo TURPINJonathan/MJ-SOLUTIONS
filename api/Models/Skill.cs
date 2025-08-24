@@ -24,11 +24,14 @@ namespace api.Models
 
 		// Specific properties for hard skills
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-		public SkillType? Type { get; set; }
+		public SkillTypeEnum? Type { get; set; }
 		[Range(0, 100)]
 		public int? Proficiency { get; set; }
 		[Url]
 		public string? DocumentationUrl { get; set; }
 		public ICollection<FileResource> Files { get; set; }
+		public ICollection<Project> Projects { get; set; }
+
 	}
+	
 }

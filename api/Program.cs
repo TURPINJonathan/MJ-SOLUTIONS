@@ -1,5 +1,6 @@
 using api.Data;
 using api.Extensions;
+using api.Mapper;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Serilog;
@@ -17,6 +18,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DatabaseConnection"),
         new MySqlServerVersion(new Version(8, 0, 43))
     ));
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+builder.Services.AddCustomAuthorization();
 
 builder.Services.AddCustomSwagger();
 builder.Services.AddCustomAuthentication(builder.Configuration);

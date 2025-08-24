@@ -19,7 +19,11 @@ namespace api.Models.Configurations
                 new Permission { Id = 5, Name = "CREATE_SKILL" },
                 new Permission { Id = 6, Name = "READ_SKILL" },
                 new Permission { Id = 7, Name = "UPDATE_SKILL" },
-                new Permission { Id = 8, Name = "DELETE_SKILL" }
+                new Permission { Id = 8, Name = "DELETE_SKILL" },
+                new Permission { Id = 9, Name = "CREATE_PROJECT" },
+                new Permission { Id = 10, Name = "READ_PROJECT" },
+                new Permission { Id = 11, Name = "UPDATE_PROJECT" },
+                new Permission { Id = 12, Name = "DELETE_PROJECT" }
             );
         }
     }

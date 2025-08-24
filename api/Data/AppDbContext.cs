@@ -15,12 +15,14 @@ namespace api.Data
 		public DbSet<AuditLog> AuditLogs { get; set; }
 		public DbSet<Skill> Skills { get; set; }
 		public DbSet<FileResource> FileResources { get; set; }
+		public DbSet<Project> Projects { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.ApplyConfiguration(new UserConfiguration());
 			modelBuilder.ApplyConfiguration(new SkillConfiguration());
 			modelBuilder.ApplyConfiguration(new PermissionConfiguration());
+			modelBuilder.ApplyConfiguration(new ProjectConfiguration());
 		}
 		
 	}

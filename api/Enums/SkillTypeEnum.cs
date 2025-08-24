@@ -1,6 +1,6 @@
 namespace api.Enums
 {
-	public enum SkillType
+	public enum SkillTypeEnum
 	{
 		ANALYTICS,
 		API,

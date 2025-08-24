@@ -26,7 +26,7 @@ namespace api.Helpers
 		public static bool IsSuperAdmin(HttpContext context, AppDbContext db)
 		{
 			var user = GetConnectedUserWithPermissions(context, db);
-			return user?.Role == UserRole.SUPER_ADMIN;
+			return user?.Role == UserRoleEnum.SUPER_ADMIN;
 		}
 
 	}

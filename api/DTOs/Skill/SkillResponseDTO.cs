@@ -4,38 +4,27 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using api.Enums;
 using api.Binders;
+using System.Text.Json.Serialization;
 
 namespace api.DTOs
 {
-	public class SkillCreateDTO
+	public class SkillResponseDTO
 	{
-		[Required]
+		public int Id { get; set; }
 		public string Name { get; set; }
-
-		[Required]
 		public string Description { get; set; }
-
-		[Required]
 		public string Color { get; set; }
 
 		public bool IsFavorite { get; set; }
 
 		public bool IsHardSkill { get; set; }
 
+		[JsonIgnore]
 		public SkillTypeEnum? Type { get; set; }
-
-		[Range(0, 100)]
-		[Required]
+		public string? TypeName => Enum.GetName(typeof(SkillTypeEnum), Type);
 		public int? Proficiency { get; set; }
-
-		[Url]
 		public string? DocumentationUrl { get; set; }
-
-		[Required]
-		public List<IFormFile> Files { get; set; }
-
-		[ModelBinder(BinderType = typeof(JsonFormDataModelBinder))]
-		public List<FileResourceDTO> FilesMeta { get; set; }
+		public List<FileResourceDTO> Files { get; set; } = new();
 	}
 		
 }

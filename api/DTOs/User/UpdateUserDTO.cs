@@ -22,7 +22,7 @@ namespace api.DTOs
 		public string? Password { get; set; }
 
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-		public UserRole? Role { get; set; }
+		public UserRoleEnum? Role { get; set; }
 		public List<string>? Permissions { get; set; }
 	}
 		

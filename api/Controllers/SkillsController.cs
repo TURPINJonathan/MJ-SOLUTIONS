@@ -6,6 +6,7 @@ using api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
 using api.Helpers;
 using System;
 
@@ -13,21 +14,16 @@ namespace api.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class SkillsController : ControllerBase
+	public class SkillsController : BaseController
 	{
-		private readonly AppDbContext _context;
-		private readonly ILogger<SkillsController> _logger;
-		private readonly ILogger<FileService> _fileLogger;
-
-		public SkillsController(AppDbContext context, ILogger<SkillsController> logger, ILogger<FileService> fileLogger)
-		{
-			_context = context;
-			_logger = logger;
-			_fileLogger = fileLogger;
-		}
-
-		private string ConnectedUserEmail => User.Identity?.Name ?? "unknown";
-		private string ConnectedUserIp => HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+    public SkillsController(
+			AppDbContext context,
+			ILogger<SkillsController> logger,
+			ILogger<FileService> fileLogger,
+			IMapper mapper
+		) : base(context, logger, fileLogger, mapper)
+    {
+    }
 
 		// GET: api/skills
 		[HttpGet]

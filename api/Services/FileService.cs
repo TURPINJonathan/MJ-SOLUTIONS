@@ -1,11 +1,12 @@
 using System.IO.Compression;
 using api.Models;
 using api.DTOs;
+using api.Helpers;
+using api.Data;
+using api.Utils;
 using Microsoft.AspNetCore.Http;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
-using api.Helpers;
-using api.Data;
 
 namespace api.Services
 {
@@ -21,18 +22,9 @@ namespace api.Services
 			_context = context;
 		}
 
-		public static string SanitizeFileName(string fileName)
-		{
-			var name = Path.GetFileNameWithoutExtension(fileName);
-			var ext = Path.GetExtension(fileName);
-			name = Regex.Replace(name, @"[^a-zA-Z0-9\-]", "_");
-			name = name.Length > 100 ? name.Substring(0, 100) : name;
-			return name + ext;
-		}
-
 		public List<FileResource> SaveFilesCompressed(
 				List<IFormFile> files,
-				List<FileResourceMeta>? metaList,
+				List<FileResourceDTO>? metaList,
 				int ownerId,
 				string ownerType,
 				string userEmail = "unknown",
@@ -72,7 +64,7 @@ namespace api.Services
 					Directory.CreateDirectory(_uploadPath);
 				}
 
-				var sanitizedName = SanitizeFileName(file.FileName);
+				var sanitizedName = StringUtils.SanitizeString(file.FileName);
 				var uniqueName = $"{Path.GetFileNameWithoutExtension(sanitizedName)}_{Guid.NewGuid()}{Path.GetExtension(sanitizedName)}.gz";
 				var filePath = Path.Combine(_uploadPath, uniqueName);
 
