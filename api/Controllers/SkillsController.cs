@@ -44,7 +44,7 @@ namespace api.Controllers
 			var responses = skills.Select(skill => _mapper.Map<SkillResponseDTO>(skill)).ToList();
 
 			_logger.LogInformation($"Consultation de la liste des skills par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-			AuditLogHelper.AddAudit(_context, "Consultation liste skills", ConnectedUserEmail, ConnectedUserIp);
+			AuditLogHelper.AddAudit(_context, "Consultation liste skills", ConnectedUserEmail, ConnectedUserIp, "Skill", null);
 			await _context.SaveChangesAsync();
 
 			return Ok(responses);
@@ -61,7 +61,7 @@ namespace api.Controllers
 			if (skill == null)
 			{
 				_logger.LogWarning($"Skill {id} non trouvé par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, $"Consultation skill {id} échouée (non trouvé)", ConnectedUserEmail, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, $"Consultation skill {id} échouée (non trouvé)", ConnectedUserEmail, ConnectedUserIp, "Skill", id);
 				await _context.SaveChangesAsync();
 				return NotFound();
 			}
@@ -69,7 +69,7 @@ namespace api.Controllers
 			var response = _mapper.Map<SkillResponseDTO>(skill);
 
 			_logger.LogInformation($"Consultation du skill {id} par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-			AuditLogHelper.AddAudit(_context, $"Consultation skill {id} réussie", ConnectedUserEmail, ConnectedUserIp);
+			AuditLogHelper.AddAudit(_context, $"Consultation skill {id} réussie", ConnectedUserEmail, ConnectedUserIp, "Skill", id);
 			await _context.SaveChangesAsync();
 
 			return Ok(response);
@@ -84,7 +84,7 @@ namespace api.Controllers
 			if (model.Files == null || model.Files.Count == 0)
 			{
 				_logger.LogWarning($"Tentative de création de skill sans fichier par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, "Échec création skill (aucun fichier)", ConnectedUserEmail, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, "Échec création skill (aucun fichier)", ConnectedUserEmail, ConnectedUserIp, "Skill", null);
 				await _context.SaveChangesAsync();
 				return BadRequest(new { error = "Au moins un fichier est obligatoire." });
 			}
@@ -120,7 +120,7 @@ namespace api.Controllers
 			var response = _mapper.Map<SkillResponseDTO>(skill);
 
 			_logger.LogInformation($"Skill '{skill.Name}' créé par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-			AuditLogHelper.AddAudit(_context, $"Création skill '{skill.Name}' réussie", ConnectedUserEmail, ConnectedUserIp);
+			AuditLogHelper.AddAudit(_context, $"Création skill '{skill.Name}' réussie", ConnectedUserEmail, ConnectedUserIp, "Skill", skill.Id);
 			await _context.SaveChangesAsync();
 
 			return CreatedAtAction(nameof(GetSkill), new { id = skill.Id }, response);
@@ -139,7 +139,7 @@ namespace api.Controllers
 			if (skill == null)
 			{
 				_logger.LogWarning($"Modification skill échouée : skill {id} non trouvé par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, $"Échec modification skill {id} (non trouvé)", ConnectedUserEmail, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, $"Échec modification skill {id} (non trouvé)", ConnectedUserEmail, ConnectedUserIp, "Skill", id);
 				await _context.SaveChangesAsync();
 				return NotFound();
 			}
@@ -160,7 +160,7 @@ namespace api.Controllers
 			var response = _mapper.Map<SkillResponseDTO>(skill);
 
 			_logger.LogInformation($"Skill {id} modifié par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-			AuditLogHelper.AddAudit(_context, $"Modification skill {id} réussie", ConnectedUserEmail, ConnectedUserIp);
+			AuditLogHelper.AddAudit(_context, $"Modification skill {id} réussie", ConnectedUserEmail, ConnectedUserIp, "Skill", id);
 			await _context.SaveChangesAsync();
 
 			return Ok(response);
@@ -179,7 +179,7 @@ namespace api.Controllers
 			if (skill == null)
 			{
 				_logger.LogWarning($"Suppression skill échouée : skill {id} non trouvé par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, $"Échec suppression skill {id} (non trouvé)", ConnectedUserEmail, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, $"Échec suppression skill {id} (non trouvé)", ConnectedUserEmail, ConnectedUserIp, "Skill", id);
 				await _context.SaveChangesAsync();
 				return NotFound();
 			}
@@ -199,7 +199,7 @@ namespace api.Controllers
 			await _context.SaveChangesAsync();
 
 			_logger.LogInformation($"Skill {id} supprimé par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-			AuditLogHelper.AddAudit(_context, $"Suppression skill {id} réussie", ConnectedUserEmail, ConnectedUserIp);
+			AuditLogHelper.AddAudit(_context, $"Suppression skill {id} réussie", ConnectedUserEmail, ConnectedUserIp, "Skill", id);
 			await _context.SaveChangesAsync();
 
 			return NoContent();

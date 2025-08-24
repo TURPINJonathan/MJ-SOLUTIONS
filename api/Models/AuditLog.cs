@@ -11,6 +11,8 @@ namespace api.Models
 		public string UserEmail { get; set; }
 		public DateTime Date { get; set; }
 		public string IpAddress { get; set; }
+		public string OwnerType { get; set; }
+		public int? OwnerId { get; set; }
 	}
 
 }

@@ -42,7 +42,7 @@ namespace api.Controllers
 			if (!UserHelper.HasPermission(HttpContext, _context, "CREATE_USER"))
 			{
 				_logger.LogWarning($"Tentative de création d'utilisateur par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp} sans permission.");
-				AuditLogHelper.AddAudit(_context, "Échec création utilisateur (permission manquante)", ConnectedUserEmail, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, "Échec création utilisateur (permission manquante)", ConnectedUserEmail, ConnectedUserIp, "User", null);
 				await _context.SaveChangesAsync();
 				return StatusCode(403, new { error = "Permission insuffisante." });
 			}
@@ -50,7 +50,7 @@ namespace api.Controllers
 			if (_context.Users.Any(u => u.Email == model.Email))
 			{
 				_logger.LogWarning($"Tentative de création d'utilisateur avec email déjà utilisé : {model.Email} par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, $"Échec création utilisateur (email déjà utilisé : {model.Email})", ConnectedUserEmail, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, $"Échec création utilisateur (email déjà utilisé : {model.Email})", ConnectedUserEmail, ConnectedUserIp, "User", null);
 				await _context.SaveChangesAsync();
 				return BadRequest(new { error = "Cet email est déjà utilisé." });
 			}
@@ -58,7 +58,7 @@ namespace api.Controllers
 			if (!PasswordHelper.IsPasswordValid(model.Password))
 			{
 				_logger.LogWarning($"Tentative de création d'utilisateur avec mot de passe non conforme par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, "Échec création utilisateur (mot de passe non conforme)", ConnectedUserEmail, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, "Échec création utilisateur (mot de passe non conforme)", ConnectedUserEmail, ConnectedUserIp, "User", null);
 				await _context.SaveChangesAsync();
 				return BadRequest(new { error = "Mot de passe non conforme." });
 			}
@@ -66,7 +66,7 @@ namespace api.Controllers
 			if (!ModelState.IsValid)
 			{
 				_logger.LogWarning($"Tentative de création d'utilisateur avec modèle invalide par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, "Échec création utilisateur (modèle invalide)", ConnectedUserEmail, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, "Échec création utilisateur (modèle invalide)", ConnectedUserEmail, ConnectedUserIp, "User", null);
 				await _context.SaveChangesAsync();
 				return BadRequest(ModelState);
 			}
@@ -91,7 +91,7 @@ namespace api.Controllers
 
 			_context.Users.Add(user);
 
-			AuditLogHelper.AddAudit(_context, $"Utilisateur {user.Email} créé", ConnectedUserEmail, ConnectedUserIp);
+			AuditLogHelper.AddAudit(_context, $"Utilisateur {user.Email} créé", ConnectedUserEmail, ConnectedUserIp, "User", user.Id);
 
 			await _context.SaveChangesAsync();
 
@@ -117,7 +117,7 @@ namespace api.Controllers
 			if (loginAttempts[ConnectedUserIp].blockedUntil.HasValue && loginAttempts[ConnectedUserIp].blockedUntil > TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris")))
 			{
 				_logger.LogWarning($"Connexion bloquée pour {login.Email} depuis {ConnectedUserIp} jusqu'à {loginAttempts[ConnectedUserIp].blockedUntil.Value.ToLocalTime()}");
-				AuditLogHelper.AddAudit(_context, $"Blocage temporaire connexion pour {login.Email}", login.Email, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, $"Blocage temporaire connexion pour {login.Email}", login.Email, ConnectedUserIp, "User", null);
 				_context.SaveChanges();
 				return StatusCode(429, $"Trop de tentatives. Réessayez après {loginAttempts[ConnectedUserIp].blockedUntil.Value.ToLocalTime()}.");
 			}
@@ -141,7 +141,7 @@ namespace api.Controllers
 
 				loginAttempts[ConnectedUserIp] = (count, blockedUntil);
 
-				AuditLogHelper.AddAudit(_context, $"Échec connexion pour {login.Email}", login.Email, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, $"Échec connexion pour {login.Email}", login.Email, ConnectedUserIp, "User", null);
 				_context.SaveChanges();
 
 				return Unauthorized(new { error = "Email ou mot de passe incorrect." });
@@ -180,7 +180,7 @@ namespace api.Controllers
 				UserId = user.Id,
 				ExpiryDate = expiryDate
 			});
-			AuditLogHelper.AddAudit(_context, "Connexion réussie", login.Email, ConnectedUserIp);
+			AuditLogHelper.AddAudit(_context, "Connexion réussie", login.Email, ConnectedUserIp, "User", user.Id);
 
 			_context.SaveChanges();
 
@@ -200,7 +200,7 @@ namespace api.Controllers
 			if (tokenEntry == null)
 			{
 				_logger.LogWarning($"Refresh token invalide ou expiré utilisé depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, "Échec refresh token (invalide ou expiré)", "unknown", ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, "Échec refresh token (invalide ou expiré)", "unknown", ConnectedUserIp, "User", null);
 				_context.SaveChanges();
 				return Unauthorized(new { error = "Refresh token invalide ou expiré." });
 			}
@@ -209,7 +209,7 @@ namespace api.Controllers
 			if (user == null)
 			{
 				_logger.LogWarning($"Refresh token utilisé pour un utilisateur non trouvé. Token: {refreshToken} depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, "Échec refresh token (utilisateur non trouvé)", "unknown", ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, "Échec refresh token (utilisateur non trouvé)", "unknown", ConnectedUserIp, "User", null);
 				_context.SaveChanges();
 				return Unauthorized(new { error = "Utilisateur non trouvé." });
 			}
@@ -244,7 +244,7 @@ namespace api.Controllers
 					signingCredentials: creds);
 
 			_logger.LogInformation($"Refresh token utilisé pour {user.Email} depuis l'IP {ConnectedUserIp}");
-			AuditLogHelper.AddAudit(_context, "Refresh token réussi", user.Email, ConnectedUserIp);
+			AuditLogHelper.AddAudit(_context, "Refresh token réussi", user.Email, ConnectedUserIp, "User", user.Id);
 			_context.SaveChanges();
 
 			return Ok(new
@@ -265,7 +265,7 @@ namespace api.Controllers
 				Token = token,
 				BlacklistedAt = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris"))
 			});
-			AuditLogHelper.AddAudit(_context, "Déconnexion", ConnectedUserEmail, ConnectedUserIp);
+			AuditLogHelper.AddAudit(_context, "Déconnexion", ConnectedUserEmail, ConnectedUserIp, "User", null);
 
 			_context.SaveChanges();
 
@@ -281,7 +281,7 @@ namespace api.Controllers
 			if (user == null)
 			{
 				_logger.LogWarning($"Modification échouée : utilisateur {model.UserId} non trouvé par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, $"Échec modification utilisateur {model.UserId} (non trouvé)", ConnectedUserEmail, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, $"Échec modification utilisateur {model.UserId} (non trouvé)", ConnectedUserEmail, ConnectedUserIp, "User", null);
 				await _context.SaveChangesAsync();
 				return NotFound(new { error = "Utilisateur non trouvé." });
 			}
@@ -293,7 +293,7 @@ namespace api.Controllers
 			if (!isSuperAdmin && !isSelf)
 			{
 				_logger.LogWarning($"Modification interdite : {ConnectedUserEmail} (id {connectedUser?.Id}) tente de modifier {user.Id} depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, $"Échec modification utilisateur {user.Id} (accès interdit)", ConnectedUserEmail, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, $"Échec modification utilisateur {user.Id} (accès interdit)", ConnectedUserEmail, ConnectedUserIp, "User", user.Id);
 				await _context.SaveChangesAsync();
 				return StatusCode(403, new { error = "Accès interdit." });
 			}
@@ -301,7 +301,7 @@ namespace api.Controllers
 			if (model.Permissions != null && !isSuperAdmin)
 			{
 				_logger.LogWarning($"Modification des permissions interdite : {ConnectedUserEmail} tente de modifier les permissions de {user.Id} depuis l'IP {ConnectedUserIp}");
-				AuditLogHelper.AddAudit(_context, $"Échec modification permissions utilisateur {user.Id} (non super admin)", ConnectedUserEmail, ConnectedUserIp);
+				AuditLogHelper.AddAudit(_context, $"Échec modification permissions utilisateur {user.Id} (non super admin)", ConnectedUserEmail, ConnectedUserIp, "User", user.Id);
 				await _context.SaveChangesAsync();
 				return StatusCode(403, new { error = "Seul le SUPER_ADMIN peut modifier les permissions." });
 			}
@@ -324,7 +324,7 @@ namespace api.Controllers
 			user.UpdatedAt = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris"));
 
 			_logger.LogInformation($"Modification réussie : utilisateur {user.Id} modifié par {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
-			AuditLogHelper.AddAudit(_context, $"Modification utilisateur {user.Id} réussie", ConnectedUserEmail, ConnectedUserIp);
+			AuditLogHelper.AddAudit(_context, $"Modification utilisateur {user.Id} réussie", ConnectedUserEmail, ConnectedUserIp, "User", user.Id);
 
 			await _context.SaveChangesAsync();
 

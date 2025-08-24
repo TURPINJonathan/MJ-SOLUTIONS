@@ -32,13 +32,13 @@ namespace api.Services
 		)
 		{
 			_logger.LogInformation($"Début de l'upload de {files.Count} fichier(s) pour {ownerType} {ownerId} par {userEmail} ({userIp})");
-			AuditLogHelper.AddAudit(_context, $"Début upload {files.Count} fichier(s) pour {ownerType} {ownerId}", userEmail, userIp);
+			AuditLogHelper.AddAudit(_context, $"Début upload {files.Count} fichier(s) pour {ownerType} {ownerId}", userEmail, userIp, ownerType, ownerId);
 			_context.SaveChanges();
 
 			if (metaList != null && metaList.Count != files.Count)
 			{
 				_logger.LogWarning("Le nombre de métadonnées ne correspond pas au nombre de fichiers.");
-				AuditLogHelper.AddAudit(_context, "Échec upload : nombre de métadonnées incorrect", userEmail, userIp);
+				AuditLogHelper.AddAudit(_context, "Échec upload : nombre de métadonnées incorrect", userEmail, userIp, ownerType, ownerId);
 				_context.SaveChanges();
 				throw new ArgumentException("Le nombre de métadonnées ne correspond pas au nombre de fichiers.");
 			}
@@ -53,7 +53,7 @@ namespace api.Services
 				if (file.Length > maxSize)
 				{
 					_logger.LogWarning($"Fichier trop volumineux : {file.FileName} ({file.Length} octets)");
-					AuditLogHelper.AddAudit(_context, $"Échec upload : fichier trop volumineux ({file.FileName})", userEmail, userIp);
+					AuditLogHelper.AddAudit(_context, $"Échec upload : fichier trop volumineux ({file.FileName})", userEmail, userIp, ownerType, ownerId);
 					_context.SaveChanges();
 					throw new ArgumentOutOfRangeException("Fichier trop volumineux (max 10 Mo).");
 				}
@@ -77,13 +77,13 @@ namespace api.Services
 						fileStream.CopyTo(gzipStream);
 					}
 					_logger.LogInformation($"Fichier {sanitizedName} compressé et sauvegardé sous {filePath}");
-					AuditLogHelper.AddAudit(_context, $"Fichier {sanitizedName} uploadé pour {ownerType} {ownerId}", userEmail, userIp);
+					AuditLogHelper.AddAudit(_context, $"Fichier {sanitizedName} uploadé pour {ownerType} {ownerId}", userEmail, userIp, ownerType, ownerId);
 					_context.SaveChanges();
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex, $"Erreur lors de la sauvegarde du fichier {sanitizedName}");
-					AuditLogHelper.AddAudit(_context, $"Erreur upload fichier {sanitizedName} : {ex.Message}", userEmail, userIp);
+					AuditLogHelper.AddAudit(_context, $"Erreur upload fichier {sanitizedName} : {ex.Message}", userEmail, userIp, ownerType, ownerId);
 					_context.SaveChanges();
 					throw;
 				}
@@ -104,7 +104,7 @@ namespace api.Services
 			}
 
 			_logger.LogInformation($"Upload terminé pour {files.Count} fichier(s) pour {ownerType} {ownerId} par {userEmail} ({userIp})");
-			AuditLogHelper.AddAudit(_context, $"Upload terminé pour {ownerType} {ownerId}", userEmail, userIp);
+			AuditLogHelper.AddAudit(_context, $"Upload terminé pour {ownerType} {ownerId}", userEmail, userIp, ownerType, ownerId);
 			_context.SaveChanges();
 
 			return result;

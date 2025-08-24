@@ -64,7 +64,7 @@ namespace api.Controllers
 				}
 
 				_logger.LogInformation($"Consultation de la liste des projets par {ConnectedUserEmail ?? "un visiteur"} depuis l'IP {ConnectedUserIp ?? "inconnue"}");
-				AuditLogHelper.AddAudit(_context, "Consultation liste projets", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue");
+				AuditLogHelper.AddAudit(_context, "Consultation liste projets", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", null);
 				await _context.SaveChangesAsync();
 
 				return Ok(responses);
@@ -72,7 +72,7 @@ namespace api.Controllers
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, $"Erreur lors de la consultation de la liste des projets par {ConnectedUserEmail ?? "un visiteur"} depuis l'IP {ConnectedUserIp ?? "inconnue"}");
-				AuditLogHelper.AddAudit(_context, $"Echec consultation liste projets : {ex.Message}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue");
+				AuditLogHelper.AddAudit(_context, $"Echec consultation liste projets : {ex.Message}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", null);
 				await _context.SaveChangesAsync();
 				return StatusCode(500, "Erreur interne du serveur.");
 			}
@@ -92,7 +92,7 @@ namespace api.Controllers
 				if (project == null)
 				{
 					_logger.LogWarning($"Projet id={id} introuvable pour {ConnectedUserEmail ?? "un visiteur"} depuis l'IP {ConnectedUserIp ?? "inconnue"}");
-					AuditLogHelper.AddAudit(_context, $"Echec consultation projet id={id} (introuvable)", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue");
+					AuditLogHelper.AddAudit(_context, $"Echec consultation projet id={id} (introuvable)", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", id);
 					await _context.SaveChangesAsync();
 					return NotFound();
 				}
@@ -101,7 +101,7 @@ namespace api.Controllers
 				await UserUtils.FillProjectUsersAsync(_context, _mapper, project, response);
 
 				_logger.LogInformation($"Consultation du projet {project.Name} par {ConnectedUserEmail ?? "un visiteur"} depuis l'IP {ConnectedUserIp ?? "inconnue"}");
-				AuditLogHelper.AddAudit(_context, $"Consultation projet {project.Name}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue");
+				AuditLogHelper.AddAudit(_context, $"Consultation projet {project.Name}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", project.Id);
 				await _context.SaveChangesAsync();
 
 				return Ok(response);
@@ -109,7 +109,7 @@ namespace api.Controllers
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, $"Erreur lors de la consultation du projet id={id} par {ConnectedUserEmail ?? "un visiteur"} depuis l'IP {ConnectedUserIp ?? "inconnue"}");
-				AuditLogHelper.AddAudit(_context, $"Echec consultation projet id={id} : {ex.Message}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue");
+				AuditLogHelper.AddAudit(_context, $"Echec consultation projet id={id} : {ex.Message}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", id);
 				await _context.SaveChangesAsync();
 				return StatusCode(500, "Erreur interne du serveur.");
 			}
@@ -124,7 +124,7 @@ namespace api.Controllers
 			if (ConnectedUserId == null)
 			{
 				_logger.LogWarning($"Tentative de création de projet sans authentification depuis l'IP {ConnectedUserIp ?? "inconnue"}");
-				AuditLogHelper.AddAudit(_context, "Echec création projet (utilisateur non authentifié)", "visiteur", ConnectedUserIp ?? "inconnue");
+				AuditLogHelper.AddAudit(_context, "Echec création projet (utilisateur non authentifié)", "visiteur", ConnectedUserIp ?? "inconnue", "Project", null);
 				await _context.SaveChangesAsync();
 				return BadRequest("Utilisateur non authentifié.");
 			}
@@ -183,7 +183,7 @@ namespace api.Controllers
 				await UserUtils.FillProjectUsersAsync(_context, _mapper, project, response);
 
 				_logger.LogInformation($"Création du projet {project.Name} par {ConnectedUserEmail ?? "un visiteur"} depuis l'IP {ConnectedUserIp ?? "inconnue"}");
-				AuditLogHelper.AddAudit(_context, $"Création projet {project.Name}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue");
+				AuditLogHelper.AddAudit(_context, $"Création projet {project.Name}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", project.Id);
 				await _context.SaveChangesAsync();
 
 				return CreatedAtAction(nameof(GetProject), new { id = project.Id }, response);
@@ -191,7 +191,7 @@ namespace api.Controllers
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, $"Erreur lors de la création d'un projet par {ConnectedUserEmail ?? "un visiteur"} depuis l'IP {ConnectedUserIp ?? "inconnue"}");
-				AuditLogHelper.AddAudit(_context, $"Echec création projet : {ex.Message}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue");
+				AuditLogHelper.AddAudit(_context, $"Echec création projet : {ex.Message}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", null);
 				await _context.SaveChangesAsync();
 				return StatusCode(500, "Erreur interne du serveur.");
 			}
@@ -211,7 +211,7 @@ namespace api.Controllers
 			if (project == null)
 			{
 				_logger.LogWarning($"Tentative de modification d'un projet inexistant id={id} par {ConnectedUserEmail ?? "un visiteur"}");
-				AuditLogHelper.AddAudit(_context, $"Echec modification projet id={id} (introuvable)", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue");
+				AuditLogHelper.AddAudit(_context, $"Echec modification projet id={id} (introuvable)", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", id);
 				await _context.SaveChangesAsync();
 				return NotFound();
 			}
@@ -244,7 +244,7 @@ namespace api.Controllers
 			await UserUtils.FillProjectUsersAsync(_context, _mapper, project, response);
 
 			_logger.LogInformation($"Modification du projet {project.Name} par {ConnectedUserEmail ?? "un visiteur"}");
-			AuditLogHelper.AddAudit(_context, $"Modification projet {project.Name}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue");
+			AuditLogHelper.AddAudit(_context, $"Modification projet {project.Name}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", project.Id);
 			await _context.SaveChangesAsync();
 
 			return Ok(response);
@@ -262,7 +262,7 @@ namespace api.Controllers
 			if (project == null)
 			{
 				_logger.LogWarning($"Tentative de suppression d'un projet inexistant id={id} par {ConnectedUserEmail ?? "un visiteur"}");
-				AuditLogHelper.AddAudit(_context, $"Echec suppression projet id={id} (introuvable)", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue");
+				AuditLogHelper.AddAudit(_context, $"Echec suppression projet id={id} (introuvable)", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", id);
 				await _context.SaveChangesAsync();
 				return NotFound();
 			}
@@ -275,7 +275,7 @@ namespace api.Controllers
 			await _context.SaveChangesAsync();
 
 			_logger.LogInformation($"Suppression (soft) du projet {project.Name} par {ConnectedUserEmail ?? "un visiteur"}");
-			AuditLogHelper.AddAudit(_context, $"Suppression (soft) projet {project.Name}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue");
+			AuditLogHelper.AddAudit(_context, $"Suppression (soft) projet {project.Name}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", project.Id);
 			await _context.SaveChangesAsync();
 
 			return NoContent();
