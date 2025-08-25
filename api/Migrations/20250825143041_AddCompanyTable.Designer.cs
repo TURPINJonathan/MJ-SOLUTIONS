@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using api.Data;
 
@@ -11,9 +12,11 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250825143041_AddCompanyTable")]
+    partial class AddCompanyTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -449,26 +452,6 @@ namespace api.Migrations
                         {
                             Id = 16,
                             Name = "DELETE_CONTACT"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Name = "CREATE_COMPANY"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Name = "READ_COMPANY"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Name = "UPDATE_COMPANY"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "DELETE_COMPANY"
                         });
                 });
 

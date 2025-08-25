@@ -9,16 +9,16 @@ namespace api.Models
 		[Key]
 		public int Id { get; set; }
 		[Required]
-		public string Name { get; set; }
+		public required string Name { get; set; }
 		[Required]
-		public string Description { get; set; }
+		public required string Description { get; set; }
 		[Required]
 		[RegularExpression(
 			"^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
 			ErrorMessage = "Invalid skill type format."
 			)
 		]
-		public string Color { get; set; }
+		public required string Color { get; set; }
 		public bool IsFavorite { get; set; }
 		public bool IsHardSkill { get; set; }
 
@@ -29,8 +29,9 @@ namespace api.Models
 		public int? Proficiency { get; set; }
 		[Url]
 		public string? DocumentationUrl { get; set; }
-		public ICollection<FileResource> Files { get; set; }
-		public ICollection<Project> Projects { get; set; }
+		public ICollection<FileResource>? Files { get; set; }
+		public ICollection<Project>? Projects { get; set; }
+		public ICollection<Company>? Companies { get; set; }
 
 	}
 	

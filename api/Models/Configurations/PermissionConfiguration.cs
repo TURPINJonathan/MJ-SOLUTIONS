@@ -27,7 +27,11 @@ namespace api.Models.Configurations
                 new Permission { Id = 13, Name = "CREATE_CONTACT" },
                 new Permission { Id = 14, Name = "READ_CONTACT" },
                 new Permission { Id = 15, Name = "UPDATE_CONTACT" },
-                new Permission { Id = 16, Name = "DELETE_CONTACT" }
+                new Permission { Id = 16, Name = "DELETE_CONTACT" },
+                new Permission { Id = 17, Name = "CREATE_COMPANY" },
+                new Permission { Id = 18, Name = "READ_COMPANY" },
+                new Permission { Id = 19, Name = "UPDATE_COMPANY" },
+                new Permission { Id = 20, Name = "DELETE_COMPANY" }
             );
         }
     }

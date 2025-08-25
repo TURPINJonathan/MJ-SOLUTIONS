@@ -17,6 +17,7 @@ namespace api.Data
 		public DbSet<FileResource> FileResources { get; set; }
 		public DbSet<Project> Projects { get; set; }
 		public DbSet<Contact> Contacts { get; set; }
+		public DbSet<Company> Companies { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -25,6 +26,7 @@ namespace api.Data
 			modelBuilder.ApplyConfiguration(new PermissionConfiguration());
 			modelBuilder.ApplyConfiguration(new ProjectConfiguration());
 			modelBuilder.ApplyConfiguration(new ContactConfiguration());
+			modelBuilder.ApplyConfiguration(new CompanyConfiguration());
 		}
 		
 	}

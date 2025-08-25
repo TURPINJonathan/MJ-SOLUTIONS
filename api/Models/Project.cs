@@ -12,17 +12,17 @@ namespace api.Models
 		public int Id { get; set; }
 
 		[Required]
-		public string Name { get; set; }
+		public required string Name { get; set; }
 
 		[Required]
-		public string Overview { get; set; }
+		public required string Overview { get; set; }
 
 		[Required]
 		[Column(TypeName = "TEXT")]
-		public string Description { get; set; }
+		public required string Description { get; set; }
 
 		[Required]
-		public string Slug { get; set; }
+		public required string Slug { get; set; }
 
 		public string? Url { get; set; }
 
@@ -38,6 +38,7 @@ namespace api.Models
 		public bool? IsOnline { get; set; }
 
 		public ICollection<Skill> Skills { get; set; } = new List<Skill>();
+		public ICollection<Company> Companies { get; set; } = new List<Company>();
 
 		public ICollection<FileResource> Files { get; set; } = new List<FileResource>();
 
