@@ -10,13 +10,13 @@ namespace api.DTOs
 {
 	public class ProjectResponseDTO
 	{
-		public int Id { get; set; }
+		public required int Id { get; set; }
 
-		public string Name { get; set; }
+		public required string Name { get; set; }
 
-		public string Overview { get; set; }
+		public required string Overview { get; set; }
 
-		public string Description { get; set; }
+		public required string Description { get; set; }
 
 		public string? Slug { get; set; }
 
@@ -24,10 +24,10 @@ namespace api.DTOs
 		public string? GithubUrl { get; set; }
 		[JsonIgnore]
 		public DeveloperRoleEnum DeveloperRole { get; set; }
-		public string DeveloperRoleName => Enum.GetName(typeof(DeveloperRoleEnum), DeveloperRole);
+		public string DeveloperRoleName => Enum.GetName(typeof(DeveloperRoleEnum), DeveloperRole) ?? string.Empty;
 		[JsonIgnore]
 		public StatusEnum Status { get; set; }
-		public string StatusName => Enum.GetName(typeof(StatusEnum), Status);
+		public string StatusName => Enum.GetName(typeof(StatusEnum), Status) ?? string.Empty;
 
 		public bool? IsOnline { get; set; }
 		public List<SkillResponseDTO> Skills { get; set; } = new();

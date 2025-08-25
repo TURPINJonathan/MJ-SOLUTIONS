@@ -23,7 +23,11 @@ namespace api.Models.Configurations
                 new Permission { Id = 9, Name = "CREATE_PROJECT" },
                 new Permission { Id = 10, Name = "READ_PROJECT" },
                 new Permission { Id = 11, Name = "UPDATE_PROJECT" },
-                new Permission { Id = 12, Name = "DELETE_PROJECT" }
+                new Permission { Id = 12, Name = "DELETE_PROJECT" },
+                new Permission { Id = 13, Name = "CREATE_CONTACT" },
+                new Permission { Id = 14, Name = "READ_CONTACT" },
+                new Permission { Id = 15, Name = "UPDATE_CONTACT" },
+                new Permission { Id = 16, Name = "DELETE_CONTACT" }
             );
         }
     }

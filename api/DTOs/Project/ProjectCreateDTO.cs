@@ -11,13 +11,13 @@ namespace api.DTOs
 	public class ProjectCreateDTO
 	{
 		[Required]
-		public string Name { get; set; }
+		public required string Name { get; set; }
 
 		[Required]
-		public string Overview { get; set; }
+		public required string Overview { get; set; }
 
 		[Required]
-		public string Description { get; set; }
+		public required string Description { get; set; }
 
 		public string? Slug { get; set; }
 

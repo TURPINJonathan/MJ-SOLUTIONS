@@ -20,6 +20,12 @@ namespace api.Extensions
 									policy.RequireClaim("permissions", "UPDATE_PROJECT"));
 				options.AddPolicy("DELETE_PROJECT", policy =>
 									policy.RequireClaim("permissions", "DELETE_PROJECT"));
+				options.AddPolicy("CREATE_CONTACT", policy =>
+									policy.RequireClaim("permissions", "CREATE_CONTACT"));
+				options.AddPolicy("UPDATE_CONTACT", policy =>
+									policy.RequireClaim("permissions", "UPDATE_CONTACT"));
+				options.AddPolicy("DELETE_CONTACT", policy =>
+									policy.RequireClaim("permissions", "DELETE_CONTACT"));
 			});
 			return services;
 		}
