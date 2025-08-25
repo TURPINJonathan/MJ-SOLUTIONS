@@ -59,7 +59,7 @@ if [[ "$install_choice" == "3" ]]; then
 
     selected_permissions=()
     for idx in $perm_choices; do
-        idx=$(echo $idx | tr -d '"')
+        idx=$(echo "$idx" | tr -d '"')
         selected_permissions+=("\"${permissions[$((idx-1))]}\"")
     done
     perms_json=$(printf ",%s" "${selected_permissions[@]}")
