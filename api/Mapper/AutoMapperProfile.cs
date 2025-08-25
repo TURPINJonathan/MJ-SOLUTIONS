@@ -28,6 +28,14 @@ namespace api.Mapper
 
 			CreateMap<Contact, ContactResponseDTO>()
 					.ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.Files));
+			
+			CreateMap<Company, CompanyResponseDTO>()
+					.ForMember(dest => dest.Projects, opt => opt.MapFrom(src => src.Projects))
+					.ForMember(dest => dest.Skills, opt => opt.MapFrom(src => src.Skills))
+					.ForMember(dest => dest.Contacts, opt => opt.MapFrom(src => src.Contacts))
+					.ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.Files))
+					.ForMember(dest => dest.RelationTypeName, opt => opt.MapFrom(src => Enum.GetName(typeof(CompanyRelationTypeEnum), src.RelationType)))
+					.ForMember(dest => dest.CreatedBy, opt => opt.Ignore());
 		}
 
 	}

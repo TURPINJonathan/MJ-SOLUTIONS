@@ -10,32 +10,32 @@ namespace api.DTOs
 	public class SkillCreateDTO
 	{
 		[Required]
-		public string Name { get; set; }
+		public required string Name { get; set; }
 
 		[Required]
-		public string Description { get; set; }
+		public required string Description { get; set; }
 
 		[Required]
-		public string Color { get; set; }
+		public required string Color { get; set; }
 
-		public bool IsFavorite { get; set; }
+		public required bool IsFavorite { get; set; }
 
-		public bool IsHardSkill { get; set; }
+		public required bool IsHardSkill { get; set; }
 
 		public SkillTypeEnum? Type { get; set; }
 
 		[Range(0, 100)]
 		[Required]
-		public int? Proficiency { get; set; }
+		public int Proficiency { get; set; }
 
 		[Url]
 		public string? DocumentationUrl { get; set; }
 
 		[Required]
-		public List<IFormFile> Files { get; set; }
-
+		public required List<IFormFile> Files { get; set; }
+		[Required]
 		[ModelBinder(BinderType = typeof(JsonFormDataModelBinder))]
-		public List<FileResourceDTO> FilesMeta { get; set; }
+		public required List<FileResourceDTO> FilesMeta { get; set; }
 	}
 		
 }

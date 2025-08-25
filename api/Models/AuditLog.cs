@@ -7,11 +7,16 @@ namespace api.Models
 	public class AuditLog
 	{
 		public int Id { get; set; }
-		public string Action { get; set; }
-		public string UserEmail { get; set; }
-		public DateTime Date { get; set; }
-		public string IpAddress { get; set; }
-		public string OwnerType { get; set; }
+		[Required]
+		public required string Action { get; set; }
+		[Required]
+		public required string UserEmail { get; set; }
+		[Required]
+		public required DateTime Date { get; set; }
+		[Required]
+		public required string IpAddress { get; set; }
+		[Required]
+		public required string OwnerType { get; set; }
 		public int? OwnerId { get; set; }
 	}
 

@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
+using api.Interface;
 using System.Text.Json.Serialization;
 using System.Collections.Generic;
 
 namespace api.Models
 {
-	public class Project
+	public class Project : IPublishableUserTrackable
 	{
 		[Key]
 		public int Id { get; set; }

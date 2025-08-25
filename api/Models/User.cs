@@ -11,25 +11,25 @@ namespace api.Models
 
 		[Required]
 		[MaxLength(250)]
-		public string lastname { get; set; }
+		public required string lastname { get; set; }
 
 		[Required]
 		[MaxLength(250)]
-		public string firstname { get; set; }
+		public required string firstname { get; set; }
 
 		[Required]
 		[EmailAddress]
-		public string Email { get; set; }
+		public required string Email { get; set; }
 
 		[Required]
-		public string PasswordHash { get; set; }
+		public required string PasswordHash { get; set; }
 
 		public UserRoleEnum? Role { get; set; }
 
 		public DateTime CreatedAt { get; set; }
 		public DateTime UpdatedAt { get; set; }
 		public int JwtVersion { get; set; } = 1;
-		public ICollection<Permission> Permissions { get; set; }
+		public ICollection<Permission> Permissions { get; set; } = new List<Permission>();
 
 	}
 }

@@ -124,6 +124,10 @@ namespace api.Controllers
 					ConnectedUserIp
 				);
 
+				if (contact.Files == null)
+				{
+					contact.Files = new List<FileResource>();
+				}
 				foreach (var file in fileResources)
 				{
 					file.OwnerId = contact.Id;
@@ -186,6 +190,11 @@ namespace api.Controllers
 				ConnectedUserEmail,
 				ConnectedUserIp
 			);
+
+			if (contact.Files == null)
+			{
+					contact.Files = new List<FileResource>();
+			}
 
 			foreach (var file in fileResources)
 			{

@@ -59,7 +59,7 @@ namespace api.Controllers
 				foreach (var project in projects)
 				{
 					var response = _mapper.Map<ProjectResponseDTO>(project);
-					await UserUtils.FillProjectUsersAsync(_context, _mapper, project, response);
+					await UserUtils.FillModelUsersAsync(_context, _mapper, project, response);
 					responses.Add(response);
 				}
 
@@ -98,7 +98,7 @@ namespace api.Controllers
 				}
 
 				var response = _mapper.Map<ProjectResponseDTO>(project);
-				await UserUtils.FillProjectUsersAsync(_context, _mapper, project, response);
+				await UserUtils.FillModelUsersAsync(_context, _mapper, project, response);
 
 				_logger.LogInformation($"Consultation du projet {project.Name} par {ConnectedUserEmail ?? "un visiteur"} depuis l'IP {ConnectedUserIp ?? "inconnue"}");
 				AuditLogHelper.AddAudit(_context, $"Consultation projet {project.Name}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", project.Id);
@@ -180,7 +180,7 @@ namespace api.Controllers
 				await _context.SaveChangesAsync();
 
 				var response = _mapper.Map<ProjectResponseDTO>(project);
-				await UserUtils.FillProjectUsersAsync(_context, _mapper, project, response);
+				await UserUtils.FillModelUsersAsync(_context, _mapper, project, response);
 
 				_logger.LogInformation($"Création du projet {project.Name} par {ConnectedUserEmail ?? "un visiteur"} depuis l'IP {ConnectedUserIp ?? "inconnue"}");
 				AuditLogHelper.AddAudit(_context, $"Création projet {project.Name}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", project.Id);
@@ -241,7 +241,7 @@ namespace api.Controllers
 			await _context.SaveChangesAsync();
 
 			var response = _mapper.Map<ProjectResponseDTO>(project);
-			await UserUtils.FillProjectUsersAsync(_context, _mapper, project, response);
+			await UserUtils.FillModelUsersAsync(_context, _mapper, project, response);
 
 			_logger.LogInformation($"Modification du projet {project.Name} par {ConnectedUserEmail ?? "un visiteur"}");
 			AuditLogHelper.AddAudit(_context, $"Modification projet {project.Name}", ConnectedUserEmail ?? "visiteur", ConnectedUserIp ?? "inconnue", "Project", project.Id);

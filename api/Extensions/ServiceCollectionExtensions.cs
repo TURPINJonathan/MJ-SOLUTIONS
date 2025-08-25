@@ -50,8 +50,8 @@ namespace api.Extensions
 
 		public static IServiceCollection AddCustomAuthentication(this IServiceCollection services, IConfiguration config)
 		{
-			var jwtKey = config.GetValue<string>("Jwt:Key");
-			var jwtIssuer = config.GetValue<string>("Jwt:Issuer");
+			var jwtKey = config.GetValue<string>("Jwt:Key") ?? throw new ArgumentNullException("Jwt:Key");
+			var jwtIssuer = config.GetValue<string>("Jwt:Issuer") ?? throw new ArgumentNullException("Jwt:Issuer");
 
 			services.AddAuthentication(options =>
 			{

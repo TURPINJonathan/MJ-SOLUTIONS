@@ -6,8 +6,11 @@ namespace api.Models
     {
         [Key]
         public int Id { get; set; }
-        public string Token { get; set; }
-        public int UserId { get; set; }
-        public DateTime ExpiryDate { get; set; }
+				[Required]
+        public required string Token { get; set; }
+				[Required]
+        public required int UserId { get; set; }
+				[Required]
+        public required DateTime ExpiryDate { get; set; }
     }
 }

@@ -184,7 +184,7 @@ namespace api.Controllers
 				return NotFound();
 			}
 
-			var files = skill.Files.ToList();
+			var files = (skill.Files ?? new List<FileResource>()).ToList();
 
 			foreach (var file in files)
 			{

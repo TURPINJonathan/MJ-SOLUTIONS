@@ -10,18 +10,18 @@ namespace api.DTOs
 {
 	public class SkillResponseDTO
 	{
-		public int Id { get; set; }
-		public string Name { get; set; }
-		public string Description { get; set; }
-		public string Color { get; set; }
+		public required int Id { get; set; }
+		public required string Name { get; set; }
+		public required string Description { get; set; }
+		public required string Color { get; set; }
 
-		public bool IsFavorite { get; set; }
+		public required bool IsFavorite { get; set; }
 
-		public bool IsHardSkill { get; set; }
+		public required bool IsHardSkill { get; set; }
 
 		[JsonIgnore]
 		public SkillTypeEnum? Type { get; set; }
-		public string? TypeName => Enum.GetName(typeof(SkillTypeEnum), Type);
+		public string? TypeName => Type.HasValue ? Enum.GetName(typeof(SkillTypeEnum), Type.Value) : string.Empty;
 		public int? Proficiency { get; set; }
 		public string? DocumentationUrl { get; set; }
 		public List<FileResourceDTO> Files { get; set; } = new();

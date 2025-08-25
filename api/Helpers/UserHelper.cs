@@ -9,7 +9,7 @@ namespace api.Helpers
 {
 	public static class UserHelper
 	{
-		public static User GetConnectedUserWithPermissions(HttpContext context, AppDbContext db)
+		public static User? GetConnectedUserWithPermissions(HttpContext context, AppDbContext db)
 		{
 			var email = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 			return db.Users

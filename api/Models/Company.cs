@@ -2,10 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using api.Enums;
+using api.Interface;
 
 namespace api.Models
 {
-	public class Company
+	public class Company : IUserTrackable
 	{
 		[Key]
 		public int Id { get; set; }

@@ -6,7 +6,9 @@ namespace api.Models
     {
         [Key]
         public int Id { get; set; }
-        public string Token { get; set; }
-        public DateTime BlacklistedAt { get; set; }
+				[Required]
+        public required string Token { get; set; }
+				[Required]
+        public required DateTime BlacklistedAt { get; set; }
     }
 }
