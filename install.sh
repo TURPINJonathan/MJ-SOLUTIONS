@@ -3,7 +3,7 @@
 
 # Vérification des dépendances
 for cmd in dialog jq openssl; do
-    if ! command -v $cmd &> /dev/null; then
+    if ! command -v "$cmd" &> /dev/null; then
         echo -e "\e[31mErreur : $cmd n'est pas installé. Installez-le avec 'sudo apt install $cmd'\e[0m"
         exit 1
     fi
