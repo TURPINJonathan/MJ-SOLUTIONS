@@ -17,13 +17,14 @@ namespace api.Services
 		private readonly ILogger<FileService> _logger;
 		private readonly AppDbContext _context;
 		private readonly long _maxUploadFileSize;
+		private const long DEFAULT_MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 		public FileService(ILogger<FileService> logger, AppDbContext context, IConfiguration configuration)
 		{
 			_logger = logger;
 			_context = context;
 			_uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-			_maxUploadFileSize = configuration.GetValue<long>("MaxUploadFileSize", 10 * 1024 * 1024); // 10 Mo par défaut
+			_maxUploadFileSize = configuration.GetValue<long>("MaxUploadFileSize", DEFAULT_MAX_FILE_SIZE); // 10 Mo par défaut
 		}
 
 		public List<FileResource> SaveFilesCompressed(
