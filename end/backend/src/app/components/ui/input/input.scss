@@ -1,0 +1,100 @@
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .input-label {
+    font-size: 0.98rem;
+    color: var(--primary);
+    font-weight: 500;
+		margin-left: var(--spacing-sm);
+
+    &.label-error {
+      color: var(--danger, #DC3545);
+			font-weight: bold;
+      animation: shake 0.2s linear 1;
+    }
+
+    &.label-valid {
+      color: var(--success, #28A745);
+    }
+  }
+
+	.input-container {
+		display: flex;
+		position: relative;
+		flex-wrap: nowrap;
+		gap: var(--gap-xs);
+
+		.input-prepend,
+		.input-append {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex: 1 0 auto;
+		}
+
+		input {
+			flex: 1 1 auto;
+			padding: var(--spacing-md) var(--spacing-md);
+			border-radius: var(--border-radius);
+			border: 1px solid var(--primary);
+			color: var(--text, #1C1C1E);
+			font-size: 1.1rem;
+			outline: none;
+			transition: border var(--transition, 0.2s), box-shadow var(--transition, 0.2s);
+			width: 100%;
+			box-sizing: border-box;
+	
+			&::placeholder {
+				color: var(--text);
+				opacity: 0.5;
+			}
+	
+			&:focus {
+				border-color: var(--secondary);
+				box-shadow: 0 0 0 2px var(--secondary);
+			}
+	
+			&.input-error {
+				border-color: var(--danger, #DC3545);
+				animation: shake 0.2s linear 1;
+			}
+	
+			&.input-valid {
+				border-color: var(--success, #28A745);
+			}
+		}
+	}
+	
+  // input[type="color"] {
+  //   width: 44px;
+  //   height: 44px;
+  //   padding: 2px;
+  //   border-radius: var(--border-radius);
+  //   border: 1px solid var(--gray, #6C757D);
+  //   background: transparent;
+  //   cursor: pointer;
+  //   transition: border 0.2s;
+  //   box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+
+  //   &:focus {
+  //     border-color: var(--accent, #FF9500);
+  //     outline: none;
+  //   }
+  // }
+
+  // &.color-picker {
+  //   flex-direction: column;
+  //   justify-content: center;
+	// 	align-items: center;
+	// 	height: 100%;
+	// 	width: 100%;
+  //   gap: 10px;
+
+  //   .input-label {
+  //     margin-bottom: 0;
+  //     min-width: 120px;
+  //   }
+  // }
+}

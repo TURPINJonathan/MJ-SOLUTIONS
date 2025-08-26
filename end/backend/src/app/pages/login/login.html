@@ -1,0 +1,57 @@
+<div class="login-container">
+	<app-card class="shadow">
+		<h1>Connexion</h1>
+
+		<app-form
+			(formSubmit)="onSubmit($event)"
+			[loading]="isLoading"
+			class="login-form"
+		>
+			<div class="form-container">
+				<app-input
+					type="email"
+					[(ngModel)]="email"
+					placeholder="contact@mj-solutions.fr"
+					name="email"
+					label="email"
+					[error]="emailInvalid"
+					[valid]="emailTouched && !emailInvalid"
+					required
+				></app-input>
+	
+				<app-input
+					[type]="inputPasswordType"
+					[(ngModel)]="password"
+					placeholder="Mot de passe"
+					name="password"
+					label="password"
+					[error]="passwordInvalid"
+					[valid]="passwordTouched && !passwordInvalid"
+					[append]="showPasswordButton"
+					required
+				></app-input>
+
+				<ng-template #showPasswordButton>
+					<app-button
+						color="transparent"
+						size="sm"
+						type="button"
+						(click)="handleTogglePasswordVisibility()"
+					>
+						<span class="material-icons">
+								{{ inputPasswordType === 'password' ? 'visibility' : 'visibility_off' }}
+						</span>
+					</app-button>
+				</ng-template>
+	
+				<app-button
+					color="success"
+					size="sm"
+					type="submit"
+				>
+					Se connecter
+				</app-button>
+			</div>
+		</app-form>
+	</app-card>
+</div>

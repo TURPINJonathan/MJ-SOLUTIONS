@@ -1,0 +1,27 @@
+@use 'variables' as *;
+@use 'themes' as *;
+@use 'animations' as *;
+
+// Reset & base
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-image: var(--background);
+  color: var(--text);
+  font-family: var(--font-family);
+  transition: background var(--transition), color var(--transition);
+  min-height: 100vh;
+  margin: 0;
+	
+	h1 {
+		margin: var(--spacing-md);
+		font-weight: bold;
+		color: var(--accent);
+		text-align: center;
+		letter-spacing: 0.05em;
+	}
+}

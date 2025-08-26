@@ -1,0 +1,6 @@
+<form (submit)="onSubmit($event)" [ngClass]="ngClass">
+  <ng-content></ng-content>
+  @if (error) {
+    <div class="form-error">{{ error }}</div>
+  }
+</form>

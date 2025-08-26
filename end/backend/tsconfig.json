@@ -18,6 +18,8 @@
     "paths": {
       "#shared/*": ["../shared/src/*"],
       "#services/*": ["src/app/services/*"],
+      "#ui/*": ["src/app/components/ui/*"],
+      "#layout/*": ["src/app/layout/*"],
       "#models/*": ["src/app/models/*"]
     }
   },

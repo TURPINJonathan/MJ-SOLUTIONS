@@ -1,0 +1,35 @@
+@use 'variables' as *;
+
+:root {
+  --primary: #{$primary};
+  --secondary: #{$secondary};
+  --transparent: #{$transparent};
+  --background: #{$background-light};
+  --text: #{$text-light};
+  --success: #{$success};
+  --danger: #{$danger};
+  --warning: #{$warning};
+	--accent: #{$accent};
+	--gray: #{$gray};
+  --info: #{$info};
+  --border-radius: #{$border-radius};
+  --transition: #{$transition};
+  --shadow: #{$shadow};
+  --font-family: #{$font-family};
+	--gap-xs: #{$gap-xs};
+	--gap-sm: #{$gap-sm};
+	--gap-md: #{$gap-md};
+	--gap-lg: #{$gap-lg};
+	--gap-xl: #{$gap-xl};
+	--spacing-xs: #{$spacing-xs};
+	--spacing-sm: #{$spacing-sm};
+	--spacing-md: #{$spacing-md};
+	--spacing-lg: #{$spacing-lg};
+	--spacing-xl: #{$spacing-xl};
+	--spacing-xxl: #{$spacing-xxl};
+}
+
+[data-theme="dark"] {
+  --background: #{$background-dark};
+  --text: #{$text-dark};
+}

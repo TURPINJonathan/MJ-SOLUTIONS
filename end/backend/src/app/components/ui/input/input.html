@@ -1,0 +1,50 @@
+<div
+	class="input-wrapper"
+	[ngClass]="{'color-picker': type === 'color'}"
+>
+	@if (label) {
+		<label
+			[for]="name"
+			class="input-label"
+			[class.label-valid]="valid"
+			[class.label-error]="error"
+		>
+			{{ capitalizedLabel }}
+		</label>
+	}
+
+	<div class="input-container">
+		@if (prepend) {
+			<div class="input-prepend">
+				@if (isTemplate(prepend)) {
+					<ng-container *ngTemplateOutlet="prepend"></ng-container>
+				} @else {
+					<ng-template #prependText>{{ prepend }}</ng-template>
+				}
+			</div>
+		}
+	
+		<input
+			[type]="type"
+			[placeholder]="placeholder"
+			[disabled]="disabled"
+			[attr.name]="name"
+			[id]="name"
+			[value]="value"
+			[class.input-valid]="valid"
+			[class.input-error]="error"
+			(input)="onInput($event)"
+			(blur)="onBlur()"
+		/>
+	
+		@if (append) {
+			<div class="input-append">
+				@if (isTemplate(append)) {
+					<ng-container *ngTemplateOutlet="append"></ng-container>
+				} @else {
+					<ng-template #appendText>{{ append }}</ng-template>
+				}
+			</div>
+		}
+	</div>
+</div>

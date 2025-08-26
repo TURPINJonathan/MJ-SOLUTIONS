@@ -1,0 +1,17 @@
+.card {
+	background: var(--transparent);
+	backdrop-filter: blur(16px);
+	border-radius: calc(var(--border-radius) + var(--spacing-lg));
+	box-shadow: var(--shadow);
+	padding: var(--spacing-lg);
+	min-width: 340px;
+	display: flex;
+	flex-direction: column;
+	gap: var(--gap-lg);
+	animation: fadeInUp 0.8s cubic-bezier(0.4,0,0.2,1);
+
+	&.shadow {
+		box-shadow: var(--shadow);
+		border-radius: calc(var(--border-radius) + var(--spacing-lg));
+	}
+}
