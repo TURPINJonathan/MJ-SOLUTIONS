@@ -5,21 +5,25 @@ using api.Helpers;
 using api.Data;
 using api.Utils;
 using Microsoft.AspNetCore.Http;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using System;
 
 namespace api.Services
 {
 	public class FileService
 	{
-		private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+		private readonly string _uploadPath;
 		private readonly ILogger<FileService> _logger;
 		private readonly AppDbContext _context;
+		private readonly long _maxUploadFileSize;
 
-		public FileService(ILogger<FileService> logger, AppDbContext context)
+		public FileService(ILogger<FileService> logger, AppDbContext context, IConfiguration configuration)
 		{
 			_logger = logger;
 			_context = context;
+			_uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+			_maxUploadFileSize = configuration.GetValue<long>("MaxUploadFileSize", 10 * 1024 * 1024); // 10 Mo par défaut
 		}
 
 		public List<FileResource> SaveFilesCompressed(
@@ -43,25 +47,24 @@ namespace api.Services
 				throw new ArgumentException("Le nombre de métadonnées ne correspond pas au nombre de fichiers.");
 			}
 
-			var maxSize = 10 * 1024 * 1024; // 10 Mo
+			if (!Directory.Exists(_uploadPath))
+			{
+				_logger.LogInformation($"Création du dossier {_uploadPath}");
+				Directory.CreateDirectory(_uploadPath);
+			}
+
 			var result = new List<FileResource>();
 			for (int i = 0; i < files.Count; i++)
 			{
 				var file = files[i];
 				var meta = metaList != null ? metaList[i] : null;
 
-				if (file.Length > maxSize)
+				if (file.Length > _maxUploadFileSize)
 				{
 					_logger.LogWarning($"Fichier trop volumineux : {file.FileName} ({file.Length} octets)");
 					AuditLogHelper.AddAudit(_context, $"Échec upload : fichier trop volumineux ({file.FileName})", userEmail, userIp, ownerType, ownerId);
 					_context.SaveChanges();
-					throw new ArgumentOutOfRangeException("Fichier trop volumineux (max 10 Mo).");
-				}
-
-				if (!Directory.Exists(_uploadPath))
-				{
-					_logger.LogInformation($"Création du dossier {_uploadPath}");
-					Directory.CreateDirectory(_uploadPath);
+					throw new ArgumentOutOfRangeException($"Fichier trop volumineux (max {_maxUploadFileSize} octets).");
 				}
 
 				var sanitizedName = StringUtils.SanitizeString(file.FileName);

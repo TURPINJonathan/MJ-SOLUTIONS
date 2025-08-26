@@ -18,16 +18,20 @@ namespace api.Controllers
 			if (fileResource == null)
 				return NotFound();
 
-			var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fileResource.FilePath.TrimStart('/'));
-			if (!System.IO.File.Exists(filePath))
+			var baseDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
+			var requestedPath = Path.GetFullPath(Path.Combine(baseDirectory, fileResource.FilePath.TrimStart('/')));
+			if (!requestedPath.StartsWith(baseDirectory, StringComparison.Ordinal))
+				return BadRequest("Chemin de fichier invalide.");
+
+			if (!System.IO.File.Exists(requestedPath))
 				return NotFound();
 
-			var compressedStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+			var compressedStream = new FileStream(requestedPath, FileMode.Open, FileAccess.Read);
 			var gzipStream = new GZipStream(compressedStream, CompressionMode.Decompress);
 
 			return File(gzipStream, fileResource.ContentType, fileResource.FileName);
 		}
-
+				
 	}
 		
 }
