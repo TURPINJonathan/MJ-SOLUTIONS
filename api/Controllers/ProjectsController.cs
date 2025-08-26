@@ -23,8 +23,9 @@ namespace api.Controllers
 				AppDbContext context,
 				ILogger<ProjectsController> logger,
 				ILogger<FileService> fileLogger,
-				IMapper mapper
-		) : base(context, logger, fileLogger, mapper)
+				IMapper mapper,
+        IConfiguration configuration
+		) : base(context, logger, fileLogger, mapper, configuration)
 		{
 			_mapper = mapper;
 		}
@@ -160,7 +161,7 @@ namespace api.Controllers
 				_context.Projects.Add(project);
 				await _context.SaveChangesAsync();
 
-				var fileService = new FileService(_fileLogger, _context);
+				var fileService = new FileService(_fileLogger, _context, _configuration);
 				var fileResources = fileService.SaveFilesCompressed(
 						model.Files,
 						model.FilesMeta,

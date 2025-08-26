@@ -21,8 +21,9 @@ namespace api.Controllers
 			AppDbContext context,
 			ILogger<ContactsController> logger,
 			ILogger<FileService> fileLogger,
-			IMapper mapper
-		) : base(context, logger, fileLogger, mapper)
+			IMapper mapper,
+			IConfiguration configuration
+		) : base(context, logger, fileLogger, mapper, configuration)
 		{
 			_mapper = mapper;
 		}
@@ -114,7 +115,7 @@ namespace api.Controllers
 				_context.Contacts.Add(contact);
 				await _context.SaveChangesAsync();
 
-				var fileService = new FileService(_fileLogger, _context);
+				var fileService = new FileService(_fileLogger, _context, _configuration);
 				var fileResources = fileService.SaveFilesCompressed(
 					model.Files ?? new List<IFormFile>(),
 					model.FilesMeta,
@@ -181,7 +182,7 @@ namespace api.Controllers
 			contact.Note = model.Note ?? contact.Note;
 			contact.UpdatedAt = DateUtils.CurrentDateTimeUtils();
 
-			var fileService = new FileService(_fileLogger, _context);
+			var fileService = new FileService(_fileLogger, _context, _configuration);
 			var fileResources = fileService.SaveFilesCompressed(
 				model.Files ?? new List<IFormFile>(),
 				model.FilesMeta,

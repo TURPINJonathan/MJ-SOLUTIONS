@@ -19,6 +19,7 @@ namespace api.Controllers
 				return NotFound();
 
 			var baseDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
+			var requestedPath = Path.Combine(baseDirectory, fileResource.FilePath.TrimStart('/'));
 			var relativePath = Path.GetRelativePath(baseDirectory, requestedPath);
 			if (relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Any(segment => segment == ".."))
 				return BadRequest("Chemin de fichier invalide.");
@@ -31,7 +32,7 @@ namespace api.Controllers
 
 			return File(gzipStream, fileResource.ContentType, fileResource.FileName);
 		}
-				
+
 	}
-		
+
 }
