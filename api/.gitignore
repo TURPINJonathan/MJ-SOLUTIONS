@@ -1,0 +1,6 @@
+appsettings.*.json
+bin/
+obj/
+logs/log.txt
+wwwroot/uploads/*
+uploads/*
