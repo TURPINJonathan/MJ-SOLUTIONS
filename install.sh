@@ -187,11 +187,6 @@ if [[ ! -f "$config_file" ]]; then
 EOF
 fi
 
-jwt_key=$(dialog --colors --inputbox "${YELLOW}Clé JWT${NORMAL} (défaut: générée aléatoirement)" 8 60 "$(openssl rand -hex 32)" 2>&1 >/dev/tty)
-jwt_issuer=$(dialog --colors --inputbox "${YELLOW}Issuer JWT${NORMAL} (défaut: mj_solutions)" 8 60 "mj_solutions" 2>&1 >/dev/tty)
-aes_key=$(dialog --colors --inputbox "${YELLOW}Clé AES${NORMAL} (défaut: générée aléatoirement)" 8 60 "$(openssl rand -hex 16)" 2>&1 >/dev/tty)
-aes_iv=$(dialog --colors --inputbox "${YELLOW}IV AES${NORMAL} (défaut: généré aléatoirement)" 8 60 "$(openssl rand -hex 16)" 2>&1 >/dev/tty)
-cors_origins=$(dialog --colors --inputbox "${YELLOW}Origines CORS autorisées${NORMAL} (séparées par des virgules, * pour tout autoriser)" 8 60 "*" 2>&1 >/dev/tty)
 # Generate keys internally
 gen_jwt_key=$(openssl rand -hex 32)
 gen_aes_key=$(openssl rand -hex 16)
