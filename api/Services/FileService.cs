@@ -107,7 +107,7 @@ namespace api.Services
 				});
 			}
 
-			_logger.LogInformation($"Upload terminé pour {files.Count} fichier(s) pour {ownerType} {ownerId} par {userEmail} ({userIp})");
+			_logger.LogInformation("Upload terminé pour {FileCount} fichier(s) pour {OwnerType} {OwnerId} par {UserEmail} ({UserIp})", files.Count, ownerType, ownerId, userEmail, userIp);
 			AuditLogHelper.AddAudit(_context, $"Upload terminé pour {ownerType} {ownerId}", userEmail, userIp, ownerType, ownerId);
 			_context.SaveChanges();
 
