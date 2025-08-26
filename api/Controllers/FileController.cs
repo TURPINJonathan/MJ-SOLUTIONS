@@ -19,8 +19,8 @@ namespace api.Controllers
 				return NotFound();
 
 			var baseDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
-			var requestedPath = Path.GetFullPath(Path.Combine(baseDirectory, fileResource.FilePath.TrimStart('/')));
-			if (!requestedPath.StartsWith(baseDirectory, StringComparison.Ordinal))
+			var relativePath = Path.GetRelativePath(baseDirectory, requestedPath);
+			if (relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Any(segment => segment == ".."))
 				return BadRequest("Chemin de fichier invalide.");
 
 			if (!System.IO.File.Exists(requestedPath))
