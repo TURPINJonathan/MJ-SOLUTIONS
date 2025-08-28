@@ -8,8 +8,6 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
-if (allowedOrigins == null || allowedOrigins.Length == 0)
-    allowedOrigins = new[] { "*" };
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -42,6 +40,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 app.UseCustomSecurityHeaders();
+
+app.UseMiddleware<CookieToAuthorizationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

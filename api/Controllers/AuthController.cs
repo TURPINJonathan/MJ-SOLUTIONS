@@ -22,14 +22,16 @@ namespace api.Controllers
 		private readonly AppDbContext _context;
 		private readonly IConfiguration _config;
 		private readonly ILogger<AuthController> _logger;
+		private readonly IWebHostEnvironment _env;
 
 		private static Dictionary<string, (int count, DateTime? blockedUntil)> loginAttempts = new();
 
-		public AuthController(AppDbContext context, IConfiguration config, ILogger<AuthController> logger)
+		public AuthController(AppDbContext context, IConfiguration config, ILogger<AuthController> logger, IWebHostEnvironment env)
 		{
 			_context = context;
 			_config = config;
 			_logger = logger;
+			_env = env;
 		}
 
 		private string ConnectedUserEmail => User.Identity?.Name ?? "unknown";
@@ -111,6 +113,8 @@ namespace api.Controllers
 		{
 			_logger.LogInformation($"Tentative de connexion pour {login.Email} depuis l'ip {ConnectedUserIp}");
 
+			var isProduction = _env.IsProduction();
+
 			if (!loginAttempts.ContainsKey(ConnectedUserIp))
 				loginAttempts[ConnectedUserIp] = (0, null);
 
@@ -159,7 +163,7 @@ namespace api.Controllers
 
 			foreach (var permission in user.Permissions)
 			{
-					claims.Add(new Claim("permissions", permission.Name));
+				claims.Add(new Claim("permissions", permission.Name));
 			}
 
 			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -185,12 +189,24 @@ namespace api.Controllers
 			_context.SaveChanges();
 
 			_logger.LogInformation($"Connexion réussie pour {login.Email} depuis {ConnectedUserIp}");
-
-			return Ok(new
+			
+			var jwtString = new JwtSecurityTokenHandler().WriteToken(token);
+			Response.Cookies.Append("token", jwtString, new CookieOptions
 			{
-				token = new JwtSecurityTokenHandler().WriteToken(token),
-				refreshToken
+					HttpOnly = true,
+					Secure = isProduction,
+					SameSite = SameSiteMode.Strict,
+					Expires = token.ValidTo
 			});
+			Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+			{
+					HttpOnly = true,
+					Secure = true,
+					SameSite = SameSiteMode.Strict,
+					Expires = expiryDate
+			});
+
+			return Ok(new { message = "Connexion réussie." });
 		}
 
 		[HttpPost("refresh")]

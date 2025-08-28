@@ -80,15 +80,17 @@ namespace api.Extensions
 			services.AddCors(options =>
 			{
 				options.AddPolicy("AllowFrontend", policy =>
-							{
-								policy.WithOrigins(allowedOrigins)
-														.AllowAnyHeader()
-														.AllowAnyMethod();
-							});
+				{
+					policy.WithOrigins(allowedOrigins)
+						.AllowAnyHeader()
+						.AllowAnyMethod()
+						.AllowCredentials();
+				});
 			});
+
 			return services;
 		}
 
 	}
-		
+	
 }
