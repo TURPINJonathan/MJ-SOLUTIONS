@@ -12,17 +12,6 @@ export function isValidPassword(password: string): boolean {
   return passwordRegex.test(password);
 }
 
-// export function isTokenExpired(token: string): boolean {
-// 	try {
-// 		const decoded = jwtDecode<JwtPayload>(token);
-// 		if (!decoded.exp) return true;
-		
-// 		return Date.now() >= decoded.exp * 1000;
-// 	} catch {
-// 		return true;
-// 	}
-// }
-
 export function isValidWebsite(url: string): boolean {
   return /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/\S*)?$/.test(url);
 }

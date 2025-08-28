@@ -37,19 +37,19 @@ export class LoginPage {
 		private router: Router
 	) {}
 
-	get emailInvalid() {
+	get emailInvalid(): boolean {
 		return this.emailTouched && !this.isValidEmail(this.email);
 	}
 
-	get passwordInvalid() {
+	get passwordInvalid(): boolean {
 		return this.passwordTouched && !this.isValidPassword(this.password);
 	}
 
-	handleTogglePasswordVisibility() {
+	handleTogglePasswordVisibility(): void {
 		this.inputPasswordType = this.inputPasswordType === "password" ? "text" : "password";
 	}
 
-	onSubmit(event: Event) {
+	onSubmit(event: Event): void {
 		this.isLoading = true;
 		this.emailTouched = true;
 		this.passwordTouched = true;
@@ -60,16 +60,21 @@ export class LoginPage {
 			return;
 		}
 
-		this.authService.login(this.email, this.password)
-			.subscribe({
-				next: (response) => {
-					this.isLoading = false;
-					this.router.navigate(['/dashboard']);
-				},
-				error: (error) => {
-					this.isLoading = false;
-					console.error('Login failed:', error);
-				}
-			});
+    this.authService.login(this.email, this.password).subscribe({
+      next: () => {
+        this.authService.checkSession().subscribe(isAuthenticated => {
+					if (isAuthenticated) {
+						this.isLoading = false;
+            this.router.navigate(['/dashboard']);
+          } else {
+            // Affiche une erreur ou reste sur login
+          }
+        });
+      },
+      error: (err) => {
+        this.isLoading = false;
+        // Gère l'erreur de login
+      }
+    });
 	}
 }

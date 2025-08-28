@@ -16,11 +16,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './app.scss'
 })
 export class App {
-	constructor(
-		private router: Router
-	) {}
-
-  protected title = 'Back Office';
+  constructor(private router: Router) {}
 
   isLoginPage(): boolean {
     return this.router.url === '/login';

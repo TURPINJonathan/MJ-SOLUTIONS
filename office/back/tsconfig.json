@@ -22,7 +22,10 @@
       "#layout/*": ["src/app/layout/*"],
       "#env/*": ["src/environments/*"],
       "#models/*": ["src/app/models/*"],
-			"#pages/*": ["src/app/pages/*"]
+			"#pages/*": ["src/app/pages/*"],
+			"#utils/*": ["src/app/utils/*"],
+			"#guard/*": ["src/app/guard/*"],
+			"#models": ["src/app/models/index.ts"]
     }
   },
   "angularCompilerOptions": {

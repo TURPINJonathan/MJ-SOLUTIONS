@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using api.Services;
 using api.Models;
 using api.Data;
 using api.Enums;
@@ -17,25 +19,22 @@ namespace api.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class AuthController : ControllerBase
+	public class AuthController : BaseController
 	{
-		private readonly AppDbContext _context;
-		private readonly IConfiguration _config;
-		private readonly ILogger<AuthController> _logger;
 		private readonly IWebHostEnvironment _env;
-
 		private static Dictionary<string, (int count, DateTime? blockedUntil)> loginAttempts = new();
 
-		public AuthController(AppDbContext context, IConfiguration config, ILogger<AuthController> logger, IWebHostEnvironment env)
+		public AuthController(
+				AppDbContext context,
+				ILogger<AuthController> logger,
+				ILogger<FileService> fileLogger,
+				IMapper mapper,
+				IConfiguration configuration,
+				IWebHostEnvironment env
+		) : base(context, logger, fileLogger, mapper, configuration)
 		{
-			_context = context;
-			_config = config;
-			_logger = logger;
 			_env = env;
 		}
-
-		private string ConnectedUserEmail => User.Identity?.Name ?? "unknown";
-		private string ConnectedUserIp => HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
 		[HttpPost("register")]
 		[Authorize(Roles = "SUPER_ADMIN")]
@@ -127,8 +126,8 @@ namespace api.Controllers
 			}
 
 			var user = _context.Users
-					.Include(u => u.Permissions)
-					.FirstOrDefault(u => u.Email == login.Email);
+											.Include(u => u.Permissions)
+											.FirstOrDefault(u => u.Email == login.Email);
 
 			if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
 			{
@@ -156,6 +155,7 @@ namespace api.Controllers
 			var claims = new List<Claim>
 			{
 					new Claim(ClaimTypes.Name, user.Email),
+					new Claim(ClaimTypes.Email, user.Email),
 					new Claim(ClaimTypes.Role, user.Role?.ToString() ?? UserRoleEnum.USER.ToString()),
 					new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 					new Claim("JwtVersion", user.JwtVersion.ToString())
@@ -166,14 +166,14 @@ namespace api.Controllers
 				claims.Add(new Claim("permissions", permission.Name));
 			}
 
-			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
 			var token = new JwtSecurityToken(
-					issuer: _config["Jwt:Issuer"],
-					claims: claims,
-					expires: TimeZoneInfo.ConvertTime(DateTime.UtcNow.AddHours(1), TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris")),
-					signingCredentials: creds);
+											issuer: _configuration["Jwt:Issuer"],
+											claims: claims,
+											expires: TimeZoneInfo.ConvertTime(DateTime.UtcNow.AddHours(1), TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris")),
+											signingCredentials: creds);
 
 			var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 			var expiryDate = TimeZoneInfo.ConvertTime(DateTime.UtcNow.AddDays(7), TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris"));
@@ -184,34 +184,82 @@ namespace api.Controllers
 				UserId = user.Id,
 				ExpiryDate = expiryDate
 			});
-			AuditLogHelper.AddAudit(_context, "Connexion réussie", login.Email, ConnectedUserIp, "User", user.Id);
+			AuditLogHelper.AddAudit(_context, "Connexion réussie", user.Email, ConnectedUserIp, "User", user.Id);
 
 			_context.SaveChanges();
 
-			_logger.LogInformation($"Connexion réussie pour {login.Email} depuis {ConnectedUserIp}");
-			
+			_logger.LogInformation($"Connexion réussie pour {user.Email} depuis {ConnectedUserIp}");
+
 			var jwtString = new JwtSecurityTokenHandler().WriteToken(token);
 			Response.Cookies.Append("token", jwtString, new CookieOptions
 			{
-					HttpOnly = true,
-					Secure = isProduction,
-					SameSite = SameSiteMode.Strict,
-					Expires = token.ValidTo
+				HttpOnly = true,
+				Secure = isProduction,
+				SameSite = isProduction ? SameSiteMode.Strict : SameSiteMode.Lax,
+				Expires = token.ValidTo
 			});
 			Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
 			{
-					HttpOnly = true,
-					Secure = true,
-					SameSite = SameSiteMode.Strict,
-					Expires = expiryDate
+				HttpOnly = true,
+				Secure = true,
+				SameSite = isProduction ? SameSiteMode.Strict : SameSiteMode.Lax,
+				Expires = expiryDate
 			});
 
 			return Ok(new { message = "Connexion réussie." });
 		}
 
-		[HttpPost("refresh")]
-		public IActionResult Refresh([FromBody] string refreshToken)
+		[HttpGet("check")]
+		[Authorize]
+		[Produces("application/json")]
+		public async Task<IActionResult> Check()
 		{
+			_logger.LogInformation($"Vérification de session pour {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
+
+			if (string.IsNullOrEmpty(ConnectedUserEmail) || ConnectedUserEmail == "unknown")
+			{
+				_logger.LogWarning($"Session non authentifiée depuis l'IP {ConnectedUserIp}");
+				AuditLogHelper.AddAudit(_context, "Échec vérification session (non authentifié)", ConnectedUserEmail, ConnectedUserIp, "User", null);
+				await _context.SaveChangesAsync();
+				return Unauthorized(new { error = "Utilisateur non authentifié." });
+			}
+
+			var user = await _context.Users
+					.Include(u => u.Permissions)
+					.FirstOrDefaultAsync(u => u.Email == ConnectedUserEmail);
+
+			if (user == null)
+			{
+				_logger.LogWarning($"Utilisateur non trouvé lors de la vérification de session ({ConnectedUserEmail}) depuis l'IP {ConnectedUserIp}");
+				AuditLogHelper.AddAudit(_context, "Échec vérification session (utilisateur non trouvé)", ConnectedUserEmail, ConnectedUserIp, "User", null);
+				await _context.SaveChangesAsync();
+				return Unauthorized(new { error = "Utilisateur non trouvé." });
+			}
+
+			AuditLogHelper.AddAudit(_context, $"Vérification session réussie pour {ConnectedUserEmail}", ConnectedUserEmail, ConnectedUserIp, "User", user.Id);
+			await _context.SaveChangesAsync();
+
+			return Ok(new
+			{
+				Id = user.Id,
+				Email = user.Email,
+				Role = user.Role,
+				Permissions = user.Permissions.Select(p => p.Name).ToList()
+			});
+		}
+
+		[HttpPost("refresh")]
+		public IActionResult Refresh()
+		{
+			var refreshToken = Request.Cookies["refreshToken"];
+			var isProduction = _env.IsProduction();
+
+			if (string.IsNullOrEmpty(refreshToken))
+			{
+				_logger.LogWarning($"Aucun refreshToken dans le cookie depuis l'IP {ConnectedUserIp}");
+				return Unauthorized(new { error = "Aucun refresh token fourni." });
+			}
+
 			var tokenEntry = _context.RefreshTokens.FirstOrDefault(rt => rt.Token == refreshToken && rt.ExpiryDate > TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris")));
 			if (tokenEntry == null)
 			{
@@ -244,48 +292,76 @@ namespace api.Controllers
 			});
 			_context.SaveChanges();
 
-			var claims = new[]
-			{
-								new Claim(ClaimTypes.Name, user.Email),
-								new Claim(ClaimTypes.Role, user.Role?.ToString() ?? UserRoleEnum.USER.ToString())
-						};
+			var claims = new List<Claim>
+												{
+														new Claim(ClaimTypes.Name, user.Email),
+														new Claim(ClaimTypes.Email, user.Email),
+														new Claim(ClaimTypes.Role, user.Role?.ToString() ?? UserRoleEnum.USER.ToString()),
+														new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+														new Claim("JwtVersion", user.JwtVersion.ToString())
+												};
 
-			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+			foreach (var permission in user.Permissions)
+			{
+				claims.Add(new Claim("permissions", permission.Name));
+			}
+
+			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 			var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
 			var token = new JwtSecurityToken(
-					issuer: _config["Jwt:Issuer"],
-					claims: claims,
-					expires: TimeZoneInfo.ConvertTime(DateTime.UtcNow.AddHours(2), TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris")),
-					signingCredentials: creds);
+							issuer: _configuration["Jwt:Issuer"],
+							claims: claims,
+							expires: TimeZoneInfo.ConvertTime(DateTime.UtcNow.AddHours(2), TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris")),
+							signingCredentials: creds);
 
 			_logger.LogInformation($"Refresh token utilisé pour {user.Email} depuis l'IP {ConnectedUserIp}");
 			AuditLogHelper.AddAudit(_context, "Refresh token réussi", user.Email, ConnectedUserIp, "User", user.Id);
 			_context.SaveChanges();
 
-			return Ok(new
+			var jwtString = new JwtSecurityTokenHandler().WriteToken(token);
+			Response.Cookies.Append("token", jwtString, new CookieOptions
 			{
-				token = new JwtSecurityTokenHandler().WriteToken(token),
-				refreshToken = newRefreshToken
+				HttpOnly = true,
+				Secure = isProduction,
+				SameSite = isProduction ? SameSiteMode.Strict : SameSiteMode.Lax,
+				Expires = token.ValidTo
 			});
+			Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
+			{
+				HttpOnly = true,
+				Secure = isProduction,
+				SameSite = isProduction ? SameSiteMode.Strict : SameSiteMode.Lax,
+				Expires = expiryDate
+			});
+
+			return Ok(new { message = "Token rafraîchi." });
 		}
 
 		[HttpPost("logout")]
 		[Authorize]
 		public IActionResult Logout()
 		{
-			var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+			var token = Request.Cookies["token"];
+			if (string.IsNullOrEmpty(token))
+			{
+				return BadRequest(new { error = "Aucun token trouvé dans le cookie." });
+			}
 
 			_context.BlacklistedTokens.Add(new BlacklistedToken
 			{
 				Token = token,
 				BlacklistedAt = TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Europe/Paris"))
 			});
-			AuditLogHelper.AddAudit(_context, "Déconnexion", ConnectedUserEmail, ConnectedUserIp, "User", null);
+			AuditLogHelper.AddAudit(_context, "Déconnexion", ConnectedUserEmail, ConnectedUserIp, "User", ConnectedUserId);
 
 			_context.SaveChanges();
 
 			_logger.LogInformation($"Déconnexion réussie pour {ConnectedUserEmail} depuis l'IP {ConnectedUserIp}");
+
+			Response.Cookies.Delete("token");
+			Response.Cookies.Delete("refreshToken");
+
 			return Ok(new { message = "Déconnexion réussie." });
 		}
 

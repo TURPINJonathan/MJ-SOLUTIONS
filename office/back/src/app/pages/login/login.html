@@ -45,6 +45,8 @@
 				</ng-template>
 	
 				<app-button
+					[disabled]="!isValidEmail(email) || !isValidPassword(password) || isLoading"
+					[loading]="isLoading"
 					color="success"
 					size="sm"
 					type="submit"
