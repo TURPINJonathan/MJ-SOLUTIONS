@@ -31,7 +31,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/assets/styles/index.scss"
+              "src/assets/styles/index.scss",
+              "node_modules/ngx-toastr/toastr.css"
             ],
 						"stylePreprocessorOptions": {
 							"includePaths": [
@@ -101,7 +102,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/assets/styles/index.scss"
+              "src/assets/styles/index.scss",
+              "node_modules/ngx-toastr/toastr.css"
             ]
           }
         }

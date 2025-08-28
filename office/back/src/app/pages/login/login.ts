@@ -7,6 +7,8 @@ import { FormComponent } from '#ui/form/form';
 import { InputComponent } from '#ui/input/input';
 import { isValidEmail, isValidPassword } from '#shared/utils/validation.utils';
 import { AuthService } from '#services/auth/auth.service';
+import { ToastrService } from 'ngx-toastr';
+import { ToastUtils } from '#utils/toast.utils';
 
 @Component({
   selector: 'app-login',
@@ -34,7 +36,8 @@ export class LoginPage {
 
 	constructor(
 		private authService: AuthService,
-		private router: Router
+		private router: Router,
+		private toast: ToastUtils
 	) {}
 
 	get emailInvalid(): boolean {
@@ -55,8 +58,7 @@ export class LoginPage {
 		this.passwordTouched = true;
 
 		if (this.emailInvalid || this.passwordInvalid) {
-			this.isLoading = false;
-			// TODO TOAST
+			this.toast.error('Veuillez vérifier vos informations', 'Erreur lors de la connexion');
 			return;
 		}
 
@@ -65,15 +67,20 @@ export class LoginPage {
         this.authService.checkSession().subscribe(isAuthenticated => {
 					if (isAuthenticated) {
 						this.isLoading = false;
+						this.toast.success('Connexion réussie', 'Bienvenue !');
             this.router.navigate(['/dashboard']);
           } else {
-            // Affiche une erreur ou reste sur login
+						this.toast.error('Erreur lors de la connexion', 'Identifiants invalides');
           }
         });
       },
       error: (err) => {
         this.isLoading = false;
-        // Gère l'erreur de login
+				if (err.status === 429) {
+					this.toast.warning('Trop de tentatives de connexion', 'Veuillez réessayer plus tard');
+				} else {
+					this.toast.error('Erreur lors de la connexion', 'Identifiants invalides');
+				}
       }
     });
 	}
