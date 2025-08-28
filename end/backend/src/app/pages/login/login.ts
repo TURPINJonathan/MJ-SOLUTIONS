@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ButtonComponent } from '#ui/button/button';
 import { CardComponent } from '#ui/card/card';
 import { FormComponent } from '#ui/form/form';
 import { InputComponent } from '#ui/input/input';
 import { isValidEmail, isValidPassword } from '#shared/utils/validation.utils';
+import { AuthService } from '#services/auth/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -30,6 +32,11 @@ export class LoginPage {
 	isValidEmail = isValidEmail;
 	isValidPassword = isValidPassword;
 
+	constructor(
+		private authService: AuthService,
+		private router: Router
+	) {}
+
 	get emailInvalid() {
 		return this.emailTouched && !this.isValidEmail(this.email);
 	}
@@ -53,6 +60,16 @@ export class LoginPage {
 			return;
 		}
 
-		// TODO
+		this.authService.login(this.email, this.password)
+			.subscribe({
+				next: (response) => {
+					this.isLoading = false;
+					this.router.navigate(['/dashboard']);
+				},
+				error: (error) => {
+					this.isLoading = false;
+					console.error('Login failed:', error);
+				}
+			});
 	}
 }

@@ -20,7 +20,9 @@
       "#services/*": ["src/app/services/*"],
       "#ui/*": ["src/app/components/ui/*"],
       "#layout/*": ["src/app/layout/*"],
-      "#models/*": ["src/app/models/*"]
+      "#env/*": ["src/environments/*"],
+      "#models/*": ["src/app/models/*"],
+			"#pages/*": ["src/app/pages/*"]
     }
   },
   "angularCompilerOptions": {
