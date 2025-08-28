@@ -1,0 +1,171 @@
+.app-header {
+  width: 100%;
+  background: var(--background);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .header-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-lg) var(--spacing-xl);
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .nav-main {
+      display: flex;
+      gap: var(--gap-xl);
+      position: relative;
+
+      .nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .nav-link {
+          color: var(--text);
+          text-decoration: none;
+          font-size: 1.08rem;
+          font-weight: 500;
+          padding: var(--spacing-sm) var(--spacing-md);
+          border-radius: var(--border-radius);
+          transition: background var(--transition), color var(--transition);
+          display: flex;
+          align-items: center;
+          gap: var(--gap-xs);
+
+          &:hover, &.active {
+            background: var(--transparent);
+            color: var(--accent);
+          }
+        }
+
+        &.has-submenu {
+          .nav-link {
+            cursor: pointer;
+            .nav-arrow {
+              margin-left: 2px;
+              transition: transform var(--transition);
+            }
+          }
+          &:hover .nav-arrow,
+          .nav-link:focus .nav-arrow {
+            transform: rotate(180deg);
+          }
+          .submenu-box {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            min-width: 180px;
+            background: var(--background);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+            border-radius: calc(var(--border-radius) + 8px);
+            padding: var(--spacing-md) 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            animation: fadeInUp 0.25s cubic-bezier(0.4,0,0.2,1);
+
+            .submenu-link {
+              color: var(--text);
+              text-decoration: none;
+              font-size: 1rem;
+              padding: var(--spacing-xs) var(--spacing-lg);
+              border-radius: var(--border-radius);
+              transition: background var(--transition), color var(--transition);
+
+              &:hover {
+                background: var(--accent);
+                color: #fff;
+              }
+            }
+          }
+        }
+      }
+    }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-lg);
+
+  .user-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .user-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: box-shadow var(--transition), filter var(--transition);
+
+        // Effet au hover/click
+        &:hover, &:focus {
+          filter: brightness(1.1) drop-shadow(0 0 8px var(--accent));
+        }
+      }
+    }
+
+    .user-submenu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 140px;
+      background: var(--background);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      border-radius: calc(var(--border-radius) + 8px);
+      padding: var(--spacing-md) 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      animation: fadeInUp 0.25s cubic-bezier(0.4,0,0.2,1);
+      z-index: 10;
+
+      .submenu-link {
+        color: var(--text);
+        text-decoration: none;
+        font-size: 1rem;
+        padding: var(--spacing-xs) var(--spacing-lg);
+        border-radius: var(--border-radius);
+        transition: background var(--transition), color var(--transition);
+				display: flex;
+				align-items: center;
+				flex-wrap: nowrap;
+				gap: var(--gap-xs);
+
+        &:hover {
+          background: var(--accent);
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+  }
+}

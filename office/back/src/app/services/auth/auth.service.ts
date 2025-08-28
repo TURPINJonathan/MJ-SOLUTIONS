@@ -10,8 +10,8 @@ import { catchError, map, Observable, of, throwError } from "rxjs";
 })
 export class AuthService {
   constructor(
-		private http: HttpClient
-	) {}
+    private http: HttpClient
+  ) {}
 
   login(email: string, password: string): Observable<LoginResponse> {
     if (!isValidEmail(email)) {
@@ -24,23 +24,20 @@ export class AuthService {
     return this.http.post<LoginResponse>(url, { email, password }, { withCredentials: true });
   }
 
-	logout(refreshToken: string | null): Observable<LogoutResponse> {
-		if (!refreshToken) {
-			return throwError(() => new Error('No refresh token provided'));
-		}
-		const url = `${environment.apiUrl}/auth/logout`;
-		return this.http.post<LogoutResponse>(url, {refreshToken : refreshToken});
-	}
+  logout(): Observable<LogoutResponse> {
+    const url = `${environment.apiUrl}/auth/logout`;
+    return this.http.post<LogoutResponse>(url, {}, { withCredentials: true });
+  }
 
-	refreshUser(refreshToken: string): Observable<RefreshResponse> {
-		return this.http.post<RefreshResponse>(`${environment.apiUrl}/auth/refresh-token`, { refreshToken });
-	}
+  refreshUser(): Observable<RefreshResponse> {
+    const url = `${environment.apiUrl}/auth/refresh`;
+    return this.http.post<RefreshResponse>(url, {}, { withCredentials: true });
+  }
 
-	checkSession(): Observable<boolean> {
-		return this.http.get(`${environment.apiUrl}/auth/check`, { withCredentials: true }).pipe(
-			map(() => true),
-			catchError(() => of(false))
-		);
-	}
-
+  checkSession(): Observable<boolean> {
+    return this.http.get(`${environment.apiUrl}/auth/check`, { withCredentials: true }).pipe(
+      map(() => true),
+      catchError(() => of(false))
+    );
+  }
 }

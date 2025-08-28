@@ -1,1 +1,75 @@
-<app-switch-mode></app-switch-mode>
+<header class="app-header">
+  <div class="header-main">
+    <div class="logo">
+      MJ SOLUTIONS
+    </div>
+    <nav class="nav-main">
+      @for (menu of menus; track menu.key) {
+        <div
+          class="nav-item"
+          [class.has-submenu]="menu.submenu?.length"
+          (mouseenter)="openSub(menu.key)"
+          (mouseleave)="closeSub(menu.key)"
+        >
+          <a
+            href="#"
+            class="nav-link"
+            [class.active]="menu.active"
+            (click)="handleMenuClick(menu, $event)"
+          >
+            <!--@if (menu.icon) {
+              <span class="material-icons" style="font-size: 1.2em; margin-right: 4px;">{{ menu.icon }}</span>
+						}-->
+            {{ menu.label }}
+            @if (menu.submenu?.length) {
+              <span class="material-icons nav-arrow" style="font-size: 1.1em; margin-left: 2px;">expand_more</span>
+            }
+          </a>
+          @if (menu.submenu?.length && subOpen[menu.key]) {
+            <div class="submenu-box"
+              (mouseenter)="openSub(menu.key)"
+              (mouseleave)="closeSub(menu.key)"
+            >
+              @for (sub of menu.submenu; track sub.key) {
+                <a href="#" class="submenu-link" (click)="handleSubmenuClick(sub, $event)">
+                  @if (sub.icon) {
+                    <span class="material-icons" style="font-size: 1em; margin-right: 4px;">{{ sub.icon }}</span>
+                  }
+                  {{ sub.label }}
+                </a>
+              }
+            </div>
+          }
+        </div>
+      }
+    </nav>
+    <div class="header-actions">
+      <app-switch-mode></app-switch-mode>
+      <button class="notif-btn" aria-label="Notifications">
+        <span class="material-icons" style="font-size: 1.5em; color: var(--accent);">notifications</span>
+      </button>
+      <div
+        class="user-menu"
+        (mouseenter)="openSub('user')"
+        (mouseleave)="closeSub('user')"
+      >
+        <button class="user-btn" (click)="toggleSub('user')" type="button">
+          <span class="user-avatar">J</span>
+        </button>
+        @if (subOpen['user']) {
+          <div class="submenu-box user-submenu"
+            (mouseenter)="openSub('user')"
+            (mouseleave)="closeSub('user')"
+          >
+            @for (userAction of userActions; track userAction.action) {
+              <a href="#" class="submenu-link" (click)="handleUserAction(userAction.action, $event)">
+                <span class="material-icons" style="font-size: 1em; margin-right: 4px;">{{ userAction.icon }}</span>
+                {{ userAction.label }}
+              </a>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</header>
