@@ -9,10 +9,3 @@ export interface LogoutResponse {
 export interface RefreshResponse {
   message: string;
 }
-
-export interface AuthSession {
-  Id: number;
-  Email: string;
-  Role: string;
-  Permissions: string[];
-}

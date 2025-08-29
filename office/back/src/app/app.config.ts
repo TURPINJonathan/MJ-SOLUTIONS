@@ -1,24 +1,26 @@
 import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
-import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
-import { provideToastr, ToastNoAnimationModule, ToastrModule } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
+import { provideHttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { provideStore } from '@ngrx/store';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { provideToastr, ToastNoAnimationModule } from 'ngx-toastr';
+import { reducers } from 'src/app/store';
+import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-		provideHttpClient(),
-		provideToastr(),
+    provideHttpClient(),
+    provideToastr(),
+    provideStore(reducers),
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-		importProvidersFrom(
-			CommonModule,
-			FormsModule,
-    	// ToastNoAnimationModule.forRoot(),
-			ToastNoAnimationModule.forRoot({
+    importProvidersFrom(CommonModule, FormsModule, 
+    // ToastNoAnimationModule.forRoot(),
+    ToastNoAnimationModule.forRoot({
         tapToDismiss: true,
         closeButton: true,
         newestOnTop: true,
@@ -30,7 +32,7 @@ export const appConfig: ApplicationConfig = {
         maxOpened: 4,
         easeTime: 300,
         positionClass: 'toast-top-right'
-			}),
-		)
-  ]
+    })),
+		provideStoreDevtools({ maxAge: 25, logOnly: false }),
+]
 };

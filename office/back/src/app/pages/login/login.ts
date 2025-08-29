@@ -9,6 +9,9 @@ import { isValidEmail, isValidPassword } from '#shared/utils/validation.utils';
 import { AuthService } from '#services/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { ToastUtils } from '#utils/toast.utils';
+import { Store } from '@ngrx/store';
+import { setUser } from '#store/user/user.actions';
+import { User } from '#models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -37,7 +40,8 @@ export class LoginPage {
 	constructor(
 		private authService: AuthService,
 		private router: Router,
-		private toast: ToastUtils
+		private toast: ToastUtils,
+		private store: Store
 	) {}
 
 	get emailInvalid(): boolean {
@@ -64,14 +68,15 @@ export class LoginPage {
 
     this.authService.login(this.email, this.password).subscribe({
       next: () => {
-        this.authService.checkSession().subscribe(isAuthenticated => {
-					if (isAuthenticated) {
+				this.authService.checkSession().subscribe((user: User | null) => {
+					if (user) {
 						this.isLoading = false;
 						this.toast.success('Connexion réussie', 'Bienvenue !');
-            this.router.navigate(['/dashboard']);
-          } else {
+						this.store.dispatch(setUser({ user }));
+						this.router.navigate(['/dashboard']);
+					} else {
 						this.toast.error('Erreur lors de la connexion', 'Identifiants invalides');
-          }
+					}
         });
       },
       error: (err) => {

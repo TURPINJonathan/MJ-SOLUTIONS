@@ -1,9 +1,13 @@
 import { MenuItem } from '#models/menu-item.model';
+import { User } from '#models/user.model';
 import { AuthService } from '#services/auth/auth.service';
+import { selectUser } from '#store/user/user.selectors';
 import { SwitchModeComponent } from '#ui/switch-mode/switch-mode';
 import { ToastUtils } from '#utils/toast.utils';
+import { StringUtils } from "#utils/string.utils"
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-header',
@@ -13,6 +17,7 @@ import { Router } from '@angular/router';
 })
 export class HeaderLayout {
   menus: MenuItem[] = [];
+  user: User | null = null;
 
   userActions = [
     { label: 'Profil', action: 'profile', icon: 'person' },
@@ -25,7 +30,9 @@ export class HeaderLayout {
 	constructor(
 		private router: Router,
 		private authService: AuthService,
-		private toast: ToastUtils
+		private toast: ToastUtils,
+		private stringUtils: StringUtils,
+		private store: Store
 	) {
 		this.menus = this.router.config
 			.filter(r => r.data && r.data['menu'] && typeof r.path === 'string')
@@ -50,6 +57,15 @@ export class HeaderLayout {
 				}
 				return base;
 			});
+			
+		this.store.select(selectUser).subscribe(user => {
+      this.user = user;
+    });
+	}
+
+	getUserInitials(): string {
+		if (!this.user) return '';
+		return this.stringUtils.firstLetter(this.user.firstname).toUpperCase() + this.stringUtils.firstLetter(this.user.lastname).toUpperCase();
 	}
 
   openSub(key: string) {

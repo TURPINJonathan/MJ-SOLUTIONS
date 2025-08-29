@@ -54,7 +54,7 @@
         (mouseleave)="closeSub('user')"
       >
         <button class="user-btn" (click)="toggleSub('user')" type="button">
-          <span class="user-avatar">J</span>
+          <span class="user-avatar">{{ getUserInitials() }}</span>
         </button>
         @if (subOpen['user']) {
           <div class="submenu-box user-submenu"

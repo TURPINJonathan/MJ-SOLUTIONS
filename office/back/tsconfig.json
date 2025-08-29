@@ -25,7 +25,8 @@
 			"#pages/*": ["src/app/pages/*"],
 			"#utils/*": ["src/app/utils/*"],
 			"#guard/*": ["src/app/guard/*"],
-			"#models": ["src/app/models/index.ts"]
+			"#models": ["src/app/models/index.ts"],
+			"#store/*": ["src/app/store/*"]
     }
   },
   "angularCompilerOptions": {

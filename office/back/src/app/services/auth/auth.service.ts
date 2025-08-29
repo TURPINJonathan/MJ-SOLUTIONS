@@ -1,5 +1,6 @@
 import { environment } from "#env/environment";
 import { LoginResponse, LogoutResponse, RefreshResponse } from "#models/auth.model";
+import { User } from "#models/user.model";
 import { isValidEmail, isValidPassword } from "#shared/utils/validation.utils";
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
@@ -34,10 +35,9 @@ export class AuthService {
     return this.http.post<RefreshResponse>(url, {}, { withCredentials: true });
   }
 
-  checkSession(): Observable<boolean> {
-    return this.http.get(`${environment.apiUrl}/auth/check`, { withCredentials: true }).pipe(
-      map(() => true),
-      catchError(() => of(false))
-    );
-  }
+	checkSession(): Observable<User | null> {
+		return this.http.get<User>(`${environment.apiUrl}/auth/check`, { withCredentials: true }).pipe(
+			catchError(() => of(null))
+		);
+	}
 }

@@ -242,6 +242,8 @@ namespace api.Controllers
 			return Ok(new
 			{
 				Id = user.Id,
+				Lastname = user.lastname,
+				Firstname = user.firstname,
 				Email = user.Email,
 				Role = user.Role,
 				Permissions = user.Permissions.Select(p => p.Name).ToList()
